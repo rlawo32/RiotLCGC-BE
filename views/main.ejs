@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" /> -->
+		<link rel="stylesheet" href="/styles.css" />
+	</head>
+	<body>
+		<div class="match_history">
+			<div class="lcg_history_title">
+			    <div class="lcg_history_title_head">
+					<div class="lcg_history_date">
+						<%=lcgGameDate%>
+					</div>
+					<div class="lcg_history_ver">
+						ver. <%=lcgGameVer%>
+					</div>
+				</div>
+				<div class="lcg_history_title_body">
+					<div class="lcg_history_duration">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
+							<path d="M8 2.667a6 6 0 1 1 0 12 6 6 0 0 1 0-12M8 4a4.667 4.667 0 1 0 0 9.333A4.667 4.667 0 0 0 8 4m0 .667c.342 0 
+							.624.257.662.589l.005.077v3.334a.67.67 0 0 1-.138.405l-.058.066-2 2a.667.667 0 0 1-.998-.88l.056-.063L7.333 
+							8.39V5.333c0-.342.258-.623.59-.662zm2-4a.667.667 0 0 1 .078 1.329L10 2H6A.667.667 0 0 1 5.922.671L6 .667z">
+							</path>
+						</svg>
+						&nbsp;<%=lcgGameDurationMin%>:<%=lcgGameDurationSec%>
+					</div>
+					<div class="lcg_history_tab">
+						<div class="lcg_tab_item lcg_tab_left select_tab">
+							종합
+						</div>
+						<div class="lcg_tab_item lcg_tab_right">
+							상세 지표
+						</div>
+					</div>
+				</div>
+			</div>
+			<% teamData.forEach((lcgTeam, i) => { %>
+				<table>
+					<thead>
+						<tr class="skeleton_ui">
+							<th colSpan="11">
+								<div class="aggregate">
+									<div class="aggregate_head">
+										<% if (lcgTeam.lcg_team_id === 100) { %>
+											<div class="aggregate_team team_blue">
+												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="grey" viewBox="0 0 24 24">
+													<g fill="none" fill-rule="evenodd">
+														<path fill="#1F85FD" d="m3 5 4 4v8h8l4 4H3z"></path>
+														<path fill="#A3A4A9" d="m21 19-4-4V7H9L5 3h16z" opacity="0.4"></path>
+														<path fill="#A3A4A9" d="M10 14v-4h4v4z" opacity="0.4"></path>
+													</g>
+												</svg>
+												&nbsp;&nbsp;TeamBlue
+											</div> 
+										<% } else { %>
+											<div class="aggregate_team team_red">
+												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="grey" viewBox="0 0 24 24">
+													<g fill="none" fill-rule="evenodd">
+														<path fill="#F60C50" d="m21 19-4-4V7H9L5 3h16z"></path>
+														<path fill="#A3A4A9" d="m3 5 4 4v8h8l4 4H3z" opacity="0.4"></path>
+														<path fill="#A3A4A9" d="M14 10v4h-4v-4z" opacity="0.4"></path>
+													</g>
+												</svg>
+												&nbsp;&nbsp;TeamRed
+											</div>
+										<% } %>
+										<div class="lcg_team_bans">
+											<% if (lcgTeam.lcg_bans_name_1 !== 'Empty') { %>
+												<div class="ban_champion">
+													<img src="<%=imageUrl1%>champion/<%=lcgTeam.lcg_bans_name_1%>.png" 
+													alt="ban_champion_5" class="lcg_image bans_image" />
+													<svg width="100%" height="100%" viewBox="0 0 64 64" preserveAspectRatio="none">
+														<line x1="64" y1="0" x2="0" y2="64" vectorEffect="non-scaling-stroke" stroke="red">
+														</line>
+													</svg>
+												</div> 
+											<% } else { %>
+												<div></div>
+											<% } %>
+											<% if (lcgTeam.lcg_bans_name_2 !== 'Empty') { %>
+												<div class="ban_champion">
+													<img src="<%=imageUrl1%>champion/<%=lcgTeam.lcg_bans_name_2%>.png" 
+													alt="ban_champion_2" class="lcg_image bans_image" />
+													<svg width="100%" height="100%" viewBox="0 0 64 64" preserveAspectRatio="none">
+														<line x1="64" y1="0" x2="0" y2="64" vectorEffect="non-scaling-stroke" stroke="red">
+														</line>
+													</svg>
+												</div> 
+											<% } else { %>
+												<div></div>
+											<% } %>
+											<% if (lcgTeam.lcg_bans_name_3 !== 'Empty') { %>
+												<div class="ban_champion">
+													<img src="<%=imageUrl1%>champion/<%=lcgTeam.lcg_bans_name_3%>.png" 
+													alt="ban_champion_3" class="lcg_image bans_image" />
+													<svg width="100%" height="100%" viewBox="0 0 64 64" preserveAspectRatio="none">
+														<line x1="64" y1="0" x2="0" y2="64" vectorEffect="non-scaling-stroke" stroke="red">
+														</line>
+													</svg>
+												</div> 
+											<% } else { %>
+												<div></div>
+											<% } %>
+											<% if (lcgTeam.lcg_bans_name_4 !== 'Empty') { %>
+												<div class="ban_champion">
+													<img src="<%=imageUrl1%>champion/<%=lcgTeam.lcg_bans_name_4%>.png" 
+													alt="ban_champion_4" class="lcg_image bans_image" />
+													<svg width="100%" height="100%" viewBox="0 0 64 64" preserveAspectRatio="none">
+														<line x1="64" y1="0" x2="0" y2="64" vectorEffect="non-scaling-stroke" stroke="red">
+														</line>
+													</svg>
+												</div> 
+											<% } else { %>
+												<div></div>
+											<% } %>
+											<% if (lcgTeam.lcg_bans_name_5 !== 'Empty') { %>
+												<div class="ban_champion">
+													<img src="<%=imageUrl1%>champion/<%=lcgTeam.lcg_bans_name_5%>.png" 
+													alt="ban_champion_5" class="lcg_image bans_image" />
+													<svg width="100%" height="100%" viewBox="0 0 64 64" preserveAspectRatio="none">
+														<line x1="64" y1="0" x2="0" y2="64" vectorEffect="non-scaling-stroke" stroke="red">
+														</line>
+													</svg>
+												</div> 
+											<% } else { %>
+												<div></div>
+											<% } %>
+										</div>
+									</div>
+									<div class="aggregate_body"> 
+										<div class="lcg_team_data">
+											<div class="lcg_win" style="color:<%= lcgTeam.lcg_team_win === 'Y' ? '#5383E8' : '#E84057' %>;">
+												<% if (lcgTeam.lcg_team_win === 'Y') { %> 
+													승리
+												<% } else { %>
+													패배
+												<% } %>
+											</div>
+											<div class="lcg_amount">
+												<div class="lcg_team_kda">
+													<%=lcgTeam.lcg_total_kill%> / <%=lcgTeam.lcg_total_death%> / <%=lcgTeam.lcg_total_assist%>
+												</div>
+												<div class="lcg_team_gold">
+													<div class="lcg_object_icon">
+														<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="white">
+															<path fill-rule="evenodd" clip-rule="evenodd" d="M14 7.29863C14 8.21556 13.035 9.05701 11.6 
+															9.51222V10.8986C11.6 12.2666 9.452 13.4666 6.8 13.4666C4.148 13.4666 2 12.2666 2 
+															10.8986V8.83463C2 7.91769 2.96502 7.07624 4.4 6.62103V5.23463C4.4 3.86663 6.548 2.66663 
+															9.2 2.66663C11.852 2.66663 14 3.86663 14 5.23463V7.29863ZM9.2 9.86663C7.41658 9.86663 
+															5.8611 9.32395 5.03349 8.55245C4.6432 8.68105 4.26873 8.85999 3.92 9.08663V10.6466C4.77418 
+															11.2018 5.78283 11.4707 6.8 11.4146C7.81717 11.4707 8.82582 11.2018 9.68 
+															10.6466V9.85343C9.52213 9.86215 9.36201 9.86663 9.2 9.86663Z" fill="#EB9C00"></path>
+														</svg>
+													</div> 
+													<div class="lcg_object_data"><%=(lcgTeam.lcg_total_gold).toLocaleString()%></div>
+												</div>
+											</div>
+										</div>
+										<div class="lcg_object_count">
+											<div class="lcg_object_item">
+												<div class="lcg_object_icon">
+													<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="white">
+														<path fill-rule="evenodd" clip-rule="evenodd" d="M8 0L6 4L3 1V5H0L3 8V11L7 16H9L13 11V8L16 
+														5H13V1L10 4L8 0ZM9 10.9999L10 8.99993L12 7.99993L11 9.99993L9 10.9999ZM4 7.99993L5 9.99993L7 
+														10.9999L6 8.99993L4 7.99993Z" fill="currentColor"></path>
+														<mask id="mask0_5762_288546" style="maskType:luminance" mask-units="userSpaceOnUse" 
+															x="0" y="0" width="16" height="16" fill="currentColor">
+															<path fill-rule="evenodd" clip-rule="evenodd" d="M8 0L6 4L3 1V5H0L3 8V11L7 16H9L13 11V8L16 
+															5H13V1L10 4L8 0ZM9 10.9999L10 8.99993L12 7.99993L11 9.99993L9 10.9999ZM4 7.99993L5 9.99993L7 
+															10.9999L6 8.99993L4 7.99993Z" fill="white"></path>
+														</mask>
+														<g mask="url(#mask0_5762_288546)" fill="white"></g>
+													</svg>
+												</div> 
+												<div class="lcg_object_data"><%=lcgTeam.lcg_total_dragon%></div>
+											</div>
+											<div class="lcg_object_item">
+												<div class="lcg_object_icon">
+													<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="white">
+														<path fill-rule="evenodd" clip-rule="evenodd" d="M12 4L10 0L16 4L14 8L11 16L10 15H6L5 16L2 8L0 4L6 0L4 
+														4L5 5H7L8 4L9 5H11L12 4ZM7 8C7 7.44695 7.4481 7 8 7C8.55284 7 9 7.44695 9 8C9 8.55211 8.55284 9 8 
+														9C7.4481 9 7 8.55211 7 8ZM9 10C9 9.4481 9.44716 9 10 9C10.5528 9 11 9.4481 11 10C11 10.5519 10.5528 
+														11 10 11C9.44716 11 9 10.5519 9 10ZM8 11C7.4481 11 7 11.4479 7 12C7 12.5531 7.4481 13 8 13C8.55284 
+														13 9 12.5531 9 12C9 11.4479 8.55284 11 8 11ZM5 10C5 9.4481 5.44789 9 6 9C6.55211 9 7 9.4481 7 10C7 
+														10.5519 6.55211 11 6 11C5.44789 11 5 10.5519 5 10Z" fill="white"></path>
+														<mask id="mask0_5762_288543" style="maskType:luminance" mask-units="userSpaceOnUse" x="0" y="0" width="16" height="16" fill="white">
+															<path fill-rule="evenodd" clip-rule="evenodd" d="M12 4L10 0L16 4L14 8L11 16L10 15H6L5 16L2 8L0 4L6 
+															0L4 4L5 5H7L8 4L9 5H11L12 4ZM7 8C7 7.44695 7.4481 7 8 7C8.55284 7 9 7.44695 9 8C9 8.55211 8.55284 
+															9 8 9C7.4481 9 7 8.55211 7 8ZM9 10C9 9.4481 9.44716 9 10 9C10.5528 9 11 9.4481 11 10C11 10.5519 
+															10.5528 11 10 11C9.44716 11 9 10.5519 9 10ZM8 11C7.4481 11 7 11.4479 7 12C7 12.5531 7.4481 13 8 
+															13C8.55284 13 9 12.5531 9 12C9 11.4479 8.55284 11 8 11ZM5 10C5 9.4481 5.44789 9 6 9C6.55211 9 7 
+															9.4481 7 10C7 10.5519 6.55211 11 6 11C5.44789 11 5 10.5519 5 10Z" fill="white"></path>
+														</mask>
+														<g mask="url(#mask0_5762_288543)" fill="white"></g>
+													</svg>
+												</div> 
+												<div class="lcg_object_data"><%=lcgTeam.lcg_total_baron%></div>
+											</div>
+											<div class="lcg_object_item">
+												<div class="lcg_object_icon">
+													<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="white">
+														<path fill-rule="evenodd" clip-rule="evenodd" d="M7.87931 12.3184H8.01691C11.0876 12.0307 11.1112 8.63778 
+														11.1112 8.63778C11.134 5.80836 8.07153 6.04968 7.94776 6.06005C7.82468 6.04968 4.76224 5.80836 4.78506 
+														8.63778C4.78506 8.63778 4.80788 12.0307 7.87931 12.3184ZM11.2377 1C11.2377 1 15.6775 3.57635 14.9874 
+														8.84453C14.9874 8.84453 12.94 9.18956 12.8253 10.7308C12.8253 10.7308 11.9741 14.1127 8.06323 
+														14.2503H7.92909C4.01824 14.1127 3.16706 10.7308 3.16706 10.7308C3.05228 9.18956 1.0042 8.84453 1.0042 
+														8.84453C0.314127 3.57635 4.75463 1 4.75463 1C3.5356 4.58864 4.91574 5.25589 4.91574 5.25589C6.00547 
+														4.45104 7.04127 4.16063 7.94776 4.13574V4.13159C7.95571 4.13159 7.96384 4.13211 7.97196 4.13262C7.98009 
+														4.13314 7.98821 4.13366 7.99616 4.13366C8.0042 4.13366 8.01242 4.13313 8.02055 4.13261C8.02849 4.13209 
+														8.03635 4.13159 8.04387 4.13159V4.13574C8.95106 4.16063 9.98616 4.45104 11.0766 5.25589C11.0766 5.25589 
+														12.4567 4.58864 11.2377 1ZM6.95885 9.17476C6.95885 8.01382 7.42212 7.07344 7.99326 7.07344C8.5644 7.07344 
+														9.02698 8.01382 9.02698 9.17476C9.02698 10.335 8.5644 11.2754 7.99326 11.2754C7.42212 11.2754 6.95885 
+														10.335 6.95885 9.17476ZM14.2859 11.3866C14.2859 11.3866 13.5723 14.9524 13.2273 15.3438C13.2273 15.3438 
+														14.7685 15.3666 16 12.9859C16 12.9859 15.5049 11.9391 14.2859 11.3866ZM2.77203 15.3434C2.77203 15.3434 
+														1.23079 15.3662 0 12.9856C0 12.9856 0.494388 11.9387 1.71411 11.3862C1.71411 11.3862 2.427 14.9521 2.77203 
+														15.3434Z" fill="white"></path>
+													</svg>
+												</div> 
+												<div class="lcg_object_data"><%=lcgTeam.lcg_total_herald%></div>
+											</div>
+											<div class="lcg_object_item">
+												<div class="lcg_object_icon">
+													<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="white">
+														<path fill-rule="evenodd" clip-rule="evenodd" d="M7.99998 1L6.33333 2.42045C6.33333 2.42045 5.46216 
+														3.2176 5.18153 3.2176H3.92809C3.00001 3.2176 1.66668 4.196 1.37128 5.89721C1.29668 6.32667 1.27273 
+														7.18045 1.93119 8.06625L1 8.81245C1 8.81245 2.33331 9.52267 2.66665 10.9431C2.99998 12.3636 5.08806 
+														13.7042 6.90051 14.0875L7.98099 14.969V15L7.99998 14.9845L8.01896 15V14.969L9.09944 14.0875C10.9119 
+														13.7042 13 12.3636 13.3333 10.9431C13.6666 9.52267 15 8.81245 15 8.81245L14.0688 8.06625C14.7272 
+														7.18045 14.7056 6.34035 14.6287 5.89721C14.3333 4.196 13 3.2176 12.0719 3.2176H10.8184C10.5378 3.2176 
+														9.66667 2.42045 9.66667 2.42045L7.99998 1ZM8.1486 4.2451C8.06916 4.15686 7.93078 4.15686 7.85134 
+														4.2451L5.43358 6.93049C5.35687 7.0157 5.36687 7.14765 5.45522 7.22073C5.72968 7.44776 6.27298 7.90668 
+														6.46151 8.13439C6.67259 8.38935 5.14596 9.53934 4.59964 9.93794C4.50018 10.0105 4.48826 10.1542 4.57436 
+														10.2422L6.41356 12.1222C6.49201 12.2024 6.62105 12.2024 6.69949 12.1222L7.857 10.9391C7.93545 10.8589 
+														8.06449 10.8589 8.14293 10.9391L9.30045 12.1222C9.37889 12.2024 9.50793 12.2024 9.58637 12.1222L11.4256 
+														10.2422C11.5117 10.1542 11.4998 10.0105 11.4003 9.93794C10.854 9.53934 9.32734 8.38935 9.53843 
+														8.13439C9.72695 7.90668 10.2703 7.44776 10.5447 7.22073C10.6331 7.14765 10.6431 7.0157 10.5664 
+														6.93049L8.1486 4.2451Z" fill="white"></path>
+													</svg>
+												</div>
+												<div class="lcg_object_data"><%=lcgTeam.lcg_total_horde%></div>
+											</div>
+											<div class="lcg_object_item">
+												<div class="lcg_object_icon">
+													<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="white">
+														<path fill-rule="evenodd" clip-rule="evenodd" d="M4 4L8 0L11.9992 4L10.9982 5.0012L11 5H14L8 11L2 5H5L4 
+														4ZM6.4 3.99963L8 2.4L9.6 3.99963L8 5.6L6.4 3.99963ZM8 12L12 8L10 16H6L4 8L8 12Z" fill="white"></path>
+														<mask id="mask0_5762_288549" style="maskType:luminance" mask-units="userSpaceOnUse" x="2" y="0" width="12" height="16" fill="white">
+															<path fill-rule="evenodd" clip-rule="evenodd" d="M4 4L8 0L11.9992 4L10.9982 5.0012L11 5H14L8 11L2 
+															5H5L4 4ZM6.4 3.99963L8 2.4L9.6 3.99963L8 5.6L6.4 3.99963ZM8 12L12 8L10 16H6L4 8L8 12Z" fill="white"></path>
+														</mask>
+														<g mask="url(#mask0_5762_288549)" fill="white"></g>
+													</svg>
+												</div> 
+												<div class="lcg_object_data"><%=lcgTeam.lcg_total_tower%></div>
+											</div>
+											<div class="lcg_object_item">
+												<div class="lcg_object_icon">
+													<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="white">
+														<path fill-rule="evenodd" clip-rule="evenodd" d="M8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15ZM8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" fill="white"></path>
+														<rect x="8" y="4" width="5.65694" height="5.65694" transform="rotate(45 8 4)" fill="white"></rect>
+													</svg>
+												</div> 
+												<div class="lcg_object_data"><%=lcgTeam.lcg_total_inhibitor%></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</th>
+						</tr>
+						<tr>
+							<th>소환사</th>
+							<th>KDA</th>
+							<th>피해량</th>
+							<th class="lcg_ward_head">와드</th>
+							<th>CS</th>
+							<th colSpan="2">아이템</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% mainData.filter((lcgFilter) => lcgFilter.lcg_team_id === lcgTeam.lcg_team_id).forEach((lcgMain, i) => { %>
+							<tr>
+								<td class="lcg_summoner">
+									<div class="lcg_summoner_wrap">
+										<div class="lcg_summoner_info">
+											<div class="lcg_champion">
+												<img src="<%=imageUrl1%>champion/<%=lcgMain.lcg_champion_name%>.png"} 
+													 alt="champion" class="lcg_image champion_image" />
+												<div class="lcg_sub_data lcg_level">
+													<%=lcgMain.lcg_champion_level%>
+												</div>
+											</div>
+											<div class="lcg_spell">
+												<img src="<%=imageUrl1%>spell/<%=lcgMain.lcg_spell_name_1%>.png" 
+												alt="spell1" class="lcg_image spell_image" />
+												<img src="<%=imageUrl1%>spell/<%=lcgMain.lcg_spell_name_2%>.png" 
+												alt="spell2" class="lcg_image spell_image" />
+											</div>
+											<div class="lcg_perk">
+												<img src="<%=imageUrl2%><%=lcgMain.lcg_perk_name_1%>" 
+												alt="perk1" class="lcg_image perk_image1" />
+												<img src="<%=imageUrl2%><%=lcgMain.lcg_perk_name_2%>" 
+												alt="perk2" class="lcg_image perk_image2" />
+											</div>
+										</div>
+										<div class="lcg_summoner_name">
+											<div class="lcg_nickname">
+												<%= playerData.find((lcgPlayer) => lcgPlayer.lcg_summoner_puuid === lcgMain.lcg_summoner_puuid).lcg_summoner_nickname %>
+											</div>
+											<div class="lcg_mvp_icon" style="background-color:<%= 
+												lcgMain.lcg_mvp_rank.includes("M") ? '#EB9C00'
+												:
+												lcgMain.lcg_mvp_rank.includes("A") ? '#7D59EA' 
+												:
+												'#9E9EB1'
+											%>;">
+												<%= lcgMain.lcg_mvp_rank.includes("M") ? "MVP" : lcgMain.lcg_mvp_rank.includes("A") ? "ACE" : lcgMain.lcg_mvp_rank.substring(1) + "th" %>
+											</div>
+										</div>
+									</div>
+								</td>
+								<td class="lcg_kda">
+									<div class="lcg_kda_head">
+										<div>
+											<%=lcgMain.lcg_kill_count%> / <%=lcgMain.lcg_death_count%> / <%=lcgMain.lcg_assist_count%>
+										</div>
+										<div class="lcg_kda_rate">
+											(<%= Math.round((lcgMain.lcg_kill_count + lcgMain.lcg_assist_count) / lcgTeam.lcg_total_kill * 100) %>%)
+										</div>
+									</div>
+									<div class="lcg_kda_calc" style="color:<%= 
+										(lcgMain.lcg_kill_count > 0 || lcgMain.lcg_assist_count > 0) && lcgMain.lcg_death_count === 0 ? '#FF8200'
+										:
+										Math.floor((lcgMain.lcg_kill_count + lcgMain.lcg_assist_count) / lcgMain.lcg_death_count) > 4 ? '#FF8200' 
+										:
+										Math.floor((lcgMain.lcg_kill_count + lcgMain.lcg_assist_count) / lcgMain.lcg_death_count) > 3 ? '#0093FF'
+										:
+										Math.floor((lcgMain.lcg_kill_count + lcgMain.lcg_assist_count) / lcgMain.lcg_death_count) > 2 ? '#00BBA3'
+										:
+										'#9E9EB1'
+									%>;">
+										<%= lcgMain.lcg_death_count !== 0 ? ((lcgMain.lcg_kill_count + lcgMain.lcg_assist_count) / lcgMain.lcg_death_count).toFixed(2) + ":1" : "Perfect" %>
+									</div>
+							
+								
+								</td>
+								<td class="lcg_deal">
+									<div class="lcg_graph">
+										<div class="lcg_damage">
+											<%= (lcgMain.lcg_damage_total).toLocaleString() %>
+											<div class="lcg_graph_total">
+												<div class="lcg_graph_target" style="width:<%= lcgMain.lcg_damage_total / lcgMaxDamageTotal * 100 %>%; background-color:#E84057;">
+												</div>
+											</div>
+										</div>
+										<div class="lcg_taken">
+											<%= (lcgMain.lcg_damage_taken).toLocaleString() %>
+											<div class="lcg_graph_total">
+												<div class="lcg_graph_target" style="width:<%= lcgMain.lcg_damage_taken / lcgMaxDamageTaken * 100 %>%; background-color:#7B7A8E;">
+												</div>
+											</div>
+										</div>
+									</div>
+								</td>
+								<td class="lcg_ward">
+									<%= subData.find((lcgSub) => lcgSub.lcg_participant_id === lcgMain.lcg_participant_id).lcg_destroy_ward %>
+									<div class="lcg_sub_data lcg_ward_count">
+										<%= subData.find((lcgSub) => lcgSub.lcg_participant_id === lcgMain.lcg_participant_id).lcg_normal_ward %>
+										&nbsp;/&nbsp;
+										<%= subData.find((lcgSub) => lcgSub.lcg_participant_id === lcgMain.lcg_participant_id).lcg_vision_ward %>
+									</div>
+								</td>
+								<td class="lcg_minion">
+									<%= lcgMain.lcg_minion_count + lcgMain.lcg_jungle_count %>
+									<div class="lcg_sub_data lcg_minute_cs">
+										분당 <%= ((lcgMain.lcg_minion_count + lcgMain.lcg_jungle_count) / lcgGameDurationMin).toFixed(1) %>
+									</div>
+								</td>
+								<td class="lcg_item">
+									<% if(lcgMain.lcg_item_id_1 !== 0) { %>
+										<img src="<%=imageUrl1%>item/<%=lcgMain.lcg_item_id_1%>.png" 
+											 alt="item1" class="item_image" />
+									<% } else { %>
+										<div class="item_image empty_image"></div>
+									<% } %>
+									<% if(lcgMain.lcg_item_id_2 !== 0) { %>
+										<img src="<%=imageUrl1%>item/<%=lcgMain.lcg_item_id_2%>.png" 
+											 alt="item2" class="item_image" />
+									<% } else { %>
+										<div class="item_image empty_image"></div>
+									<% } %>
+									<% if(lcgMain.lcg_item_id_3 !== 0) { %>
+										<img src="<%=imageUrl1%>item/<%=lcgMain.lcg_item_id_3%>.png" 
+											 alt="item3" class="item_image" />
+									<% } else { %>
+										<div class="item_image empty_image"></div>
+									<% } %>
+									<% if(lcgMain.lcg_item_id_4 !== 0) { %>
+										<img src="<%=imageUrl1%>item/<%=lcgMain.lcg_item_id_4%>.png" 
+											 alt="item4" class="item_image" />
+									<% } else { %>
+										<div class="item_image empty_image"></div>
+									<% } %>
+									<% if(lcgMain.lcg_item_id_5 !== 0) { %>
+										<img src="<%=imageUrl1%>item/<%=lcgMain.lcg_item_id_5%>.png" 
+											 alt="item5" class="item_image" />
+									<% } else { %>
+										<div class="item_image empty_image"></div>
+									<% } %>
+									<% if(lcgMain.lcg_item_id_6 !== 0) { %>
+										<img src="<%=imageUrl1%>item/<%=lcgMain.lcg_item_id_6%>.png" 
+											 alt="item6" class="item_image" />
+									<% } else { %>
+										<div class="item_image empty_image"></div>
+									<% } %>
+								</td>
+								<td class="lcg_acc">
+									<% if(lcgMain.lcg_item_id_7 !== 0) { %>
+										<img src="<%=imageUrl1%>item/<%=lcgMain.lcg_item_id_7%>.png" 
+											 alt="item7" class="item_image" />
+									<% } else { %>
+										<div class="item_image empty_image"></div>
+									<% } %>
+								</td>
+							</tr>
+						<% }) %>
+					</tbody>
+				</table>
+			<% }) %>
+		</div>
+	</body>
+</html>
