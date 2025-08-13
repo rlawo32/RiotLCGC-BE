@@ -11,7 +11,7 @@ const port = 8080;
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-const allowedOrigins = ['http://localhost:3001', 'https://rabbitgang.vercel.app'];
+const allowedOrigins = ['http://localhost:3001', 'http://localhost:3000', 'http://localhost:8080', 'https://rabbitgang.vercel.app'];
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
@@ -31,11 +31,12 @@ const supabase = require('./supabase.js');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-const getLogData = async() => {
+const getInfoData = async() => {
 	const { data, error } = await supabase
-		.from('lcg_match_log')
-		.select('*')
-		.eq("lcg_game_id", 7710221890);
+		.from("lcg_match_info")
+		.select("lcg_game_id, lcg_game_duration, lcg_max_damage_total, lcg_max_damage_taken")
+		.order("lcg_game_id", { ascending: false })
+		.limit(1)
 
 	if (error) {
 		console.error('Error fetching data:', error);
@@ -45,11 +46,11 @@ const getLogData = async() => {
 	return data; 
 };
 
-const getInfoData = async() => {
+const getLogData = async(gameId) => {
 	const { data, error } = await supabase
-		.from("lcg_match_info")
-		.select("lcg_game_id, lcg_ver_main, lcg_game_duration, lcg_max_gold, lcg_max_crowd, lcg_max_dpm, lcg_max_gpm, lcg_max_dpg, lcg_max_damage_total, lcg_max_damage_taken")
-		.eq("lcg_game_id", 7710221890);
+		.from('lcg_match_log')
+		.select('lcg_game_ver, lcg_game_date')
+		.eq("lcg_game_id", gameId);
 
 	if (error) {
 		console.error('Error fetching data:', error);
@@ -62,7 +63,7 @@ const getInfoData = async() => {
 const getEtcData = async() => {
 	const { data, error } = await supabase
 		.from("lcg_match_etc")
-		.select("lcg_cdn, lcg_lang, lcg_main_ver, lcg_main_image, lcg_sub_image, lcg_update_player, lcg_update_data")
+		.select("lcg_main_image, lcg_sub_image, lcg_r2_image")
 		.order("lcg_update_date", { ascending: false })
 		.limit(1);
 
@@ -74,11 +75,11 @@ const getEtcData = async() => {
 	return data; 
 };
 
-const getTeamData = async() => {
+const getTeamData = async(gameId) => {
 	const { data, error } = await supabase
 		.from("lcg_match_team")
 		.select("*")
-		.eq("lcg_game_id", 7710221890);
+		.eq("lcg_game_id", gameId);
 
 	if (error) {
 		console.error('Error fetching data:', error);
@@ -88,11 +89,11 @@ const getTeamData = async() => {
 	return data; 
 };
 
-const getMainData = async() => {
+const getMainData = async(gameId) => {
 	const { data, error } = await supabase
 		.from("lcg_match_main")
 		.select("*")
-		.eq("lcg_game_id", 7710221890);
+		.eq("lcg_game_id", gameId);
 
 	if (error) {
 		console.error('Error fetching data:', error);
@@ -102,11 +103,11 @@ const getMainData = async() => {
 	return data; 
 };
 
-const getSubData = async() => {
+const getSubData = async(gameId) => {
 	const { data, error } = await supabase
 		.from("lcg_match_sub")
 		.select("*")
-		.eq("lcg_game_id", 7710221890);
+		.eq("lcg_game_id", gameId);
 
 	if (error) {
 		console.error('Error fetching data:', error);
@@ -136,7 +137,6 @@ const getGameDurationMin = (duration) => {
     if(second > 30) {
         minute += 1;
     }
-
     return minute;
 }
 
@@ -215,12 +215,13 @@ const capture = async () => {
 app.get('/main', async (req, res) => {
 	res.set('Content-Type', 'text/html; charset=utf-8');
 
-	const logData = await getLogData();
 	const infoData = await getInfoData();
+	const gameId = infoData[0].lcg_game_id;
+	const logData = await getLogData(gameId);
 	const etcData = await getEtcData();
-	const teamData = await getTeamData();
-	const mainData = await getMainData();
-	const subData = await getSubData();
+	const teamData = await getTeamData(gameId);
+	const mainData = await getMainData(gameId);
+	const subData = await getSubData(gameId);
 	const playerData = await getPlayerData();
 
 	const lcgGameDate = logData[0].lcg_game_date.substring(0, 10);
