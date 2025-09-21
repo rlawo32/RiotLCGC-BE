@@ -27,6 +27,9 @@ app.listen(port, '0.0.0.0', () => {
     console.log(`Test app listening on port ${port}`)
 })
 
+require('dotenv').config();
+const { uploadToR2 } = require('./r2_upload');
+
 const supabase = require('./supabase.js');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -140,9 +143,9 @@ const getGameDurationMin = (duration) => {
     return minute;
 }
 
-const sendToDiscord = async (type, file) => {
+const sendToDiscord = async (type, originPath, imageUrl) => {
     try {
-		const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+		const webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
 
 		const today = new Date();
 		const year = today.getFullYear();
@@ -152,16 +155,27 @@ const sendToDiscord = async (type, file) => {
 
         const form = new FormData();
 
+/*
 		if(type === "M") {
         	form.append('file', fs.createReadStream(file));
 		} else if(type === "S") {
         	form.append('file', file, { filename: 'capture.png' });
 		}
-        form.append('content', `${date} 최신 전적 업데이트!`);
+*/
+		if(type === "H") {
+			form.append('content', `${date} 최신 전적 업데이트!\n${imageUrl}`);
+		} else if(type === "F") {
+			form.append('content', `${date} 피어리스 업데이트!\n${imageUrl}`);
+		} else if(type === "S") {
+			form.append('content', `${date} 팀 셔플 결과\n${imageUrl}`);
+		}
 
         await axios.post(webhookUrl, form, {
             headers: form.getHeaders()
         });
+		if(type === "H") {
+			fs.unlinkSync(originPath);
+		} 
 
         console.log('Discord transfer complete!');
     } catch (error) {
@@ -170,7 +184,7 @@ const sendToDiscord = async (type, file) => {
 };
 
 // 최신 전적 이미지 캡쳐
-const capture = async () => {
+const capture_history = async () => {
     const browser = await puppeteer.launch({
         headless: 'new',
         args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -180,7 +194,7 @@ const capture = async () => {
 
     try {
 		await page.setViewport({ width: 850, height: 900 });
-        await page.goto('http://localhost:8080/main', {
+        await page.goto('http://localhost:8080/history', {
             waitUntil: 'networkidle2',
             timeout: 60000 
         });
@@ -202,8 +216,56 @@ const capture = async () => {
         const filename = `screenshots/screenshot-${Date.now()}.png`;
         await page.screenshot({ path: filename, fullPage: true });
         console.log(`Capture Success : ${filename}`);
+		
+        const imageUrl = await uploadToR2('H', filename);
+        console.log(`Uploaded to R2: ${imageUrl}`);
 
-		await sendToDiscord("M", filename);
+		await sendToDiscord("H", filename, imageUrl);
+    } catch (err) {
+        console.error('Capture Fail :', err.message);
+    } finally {
+        await browser.close();
+    }
+}
+
+// 피어리스 이미지 캡쳐
+const capture_fearless = async () => {
+    const browser = await puppeteer.launch({
+        headless: 'new',
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+
+    const page = await browser.newPage();
+
+    try {
+		await page.setViewport({ width: 850, height: 900 });
+        await page.goto('http://localhost:8080/fearless', {
+            waitUntil: 'networkidle2',
+            timeout: 60000 
+        });
+
+		await page.evaluate(() => {
+			return Promise.all(
+				Array.from(document.images).map(img => {
+				if (img.complete) return Promise.resolve();
+					return new Promise((resolve) => {
+						img.onload = resolve;
+						img.onerror = resolve;
+					});
+				})
+			);
+		});
+
+        await page.waitForSelector('.match_history', { timeout: 10000 }); 
+
+        const filename = `screenshots/screenshot-${Date.now()}.png`;
+        await page.screenshot({ path: filename, fullPage: true });
+        console.log(`Capture Success : ${filename}`);
+		
+        const imageUrl = await uploadToR2('F', filename);
+        console.log(`Uploaded to R2: ${imageUrl}`);
+
+		await sendToDiscord("H", filename, imageUrl);
     } catch (err) {
         console.error('Capture Fail :', err.message);
     } finally {
@@ -212,7 +274,7 @@ const capture = async () => {
 }
 
 // 최신 전적 이미지 생성
-app.get('/main', async (req, res) => {
+app.get('/history', async (req, res) => {
 	res.set('Content-Type', 'text/html; charset=utf-8');
 
 	const infoData = await getInfoData();
@@ -233,7 +295,7 @@ app.get('/main', async (req, res) => {
 	const lcgMaxDamageTotal = infoData[0].lcg_max_damage_total;
 	const lcgMaxDamageTaken = infoData[0].lcg_max_damage_taken;
 
-	res.render("main", { lcgGameDate, lcgGameVer, lcgGameDurationMin, lcgGameDurationSec, imageUrl1, imageUrl2, lcgMaxDamageTotal, lcgMaxDamageTaken, teamData, mainData, subData, playerData });
+	res.render("history", { lcgGameDate, lcgGameVer, lcgGameDurationMin, lcgGameDurationSec, imageUrl1, imageUrl2, lcgMaxDamageTotal, lcgMaxDamageTaken, teamData, mainData, subData, playerData });
 });
 
 // NextJS로 부터 Shuffle IAMGE 수신
@@ -249,8 +311,11 @@ app.post('/send-image', upload.single('imageFile'), async (req, res) => {
         console.log('Message :', message);
         console.log('File name :', file.originalname);
         console.log('File size :', file.size);
+		
+        const imageUrl = await uploadToR2('S', file.buffer);
+        console.log(`Uploaded to R2: ${imageUrl}`);
 
-		await sendToDiscord("S", file.buffer);
+		await sendToDiscord("S", file.originalname, imageUrl);
 
         res.status(200).json({ message: 'Image received successfully' });
     } catch (error) {
@@ -259,23 +324,43 @@ app.post('/send-image', upload.single('imageFile'), async (req, res) => {
     }
 });
 
-const realtime = () => {
+const realtime_test = () => {
     supabase
-		.channel('schema-db-changes')
+		.channel('test_channel')
 		.on(
 			'postgres_changes',
 			{
 				event: 'INSERT', 
 				schema: 'public',
-				//table: 'lcg_match_info',
 				table: 'test',
 			},
 			(payload) => {
 				console.log(payload);
-				capture();
+				capture_history();
+			}
+		)
+		.subscribe(status => {
+			console.log('Realtime subscription status:', status);
+		});
+}
+
+const realtime_real = () => {
+    supabase
+		.channel('real_channel')
+		.on(
+			'postgres_changes',
+			{
+				event: 'INSERT', 
+				schema: 'public',
+				table: 'lcg_match_info',
+			},
+			(payload) => {
+				console.log(payload);
+				capture_history();
 			}
 		)
 		.subscribe()
 }
 
-realtime();
+realtime_test();
+realtime_real();
