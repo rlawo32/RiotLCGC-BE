@@ -145,8 +145,6 @@ const getGameDurationMin = (duration) => {
 
 const sendToDiscord = async (type, originPath, imageUrl) => {
     try {
-		const webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
-
 		const today = new Date();
 		const year = today.getFullYear();
 		const month = String(today.getMonth() + 1).padStart(2, '0');  // 0부터 시작하므로 +1
@@ -154,6 +152,7 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
 		const date = `${year}-${month}-${day}`;
 
         const form = new FormData();
+		let webhookUrl = '';
 
 /*
 		if(type === "M") {
@@ -164,16 +163,20 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
 */
 		if(type === "H") {
 			form.append('content', `${date} 최신 전적 업데이트!\n${imageUrl}`);
+			webhookUrl = process.env.DISCORD_WEBHOOK_URL_HISTORY;
 		} else if(type === "F") {
 			form.append('content', `${date} 피어리스 업데이트!\n${imageUrl}`);
+			webhookUrl = process.env.DISCORD_WEBHOOK_URL_FEARLESS;
 		} else if(type === "S") {
 			form.append('content', `${date} 팀 셔플 결과\n${imageUrl}`);
+			webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
 		}
+		webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
 
         await axios.post(webhookUrl, form, {
             headers: form.getHeaders()
         });
-		if(type === "H") {
+		if(type === "H" || type === "F") {
 			fs.unlinkSync(originPath);
 		} 
 
@@ -298,7 +301,7 @@ app.get('/history', async (req, res) => {
 	res.render("history", { lcgGameDate, lcgGameVer, lcgGameDurationMin, lcgGameDurationSec, imageUrl1, imageUrl2, lcgMaxDamageTotal, lcgMaxDamageTaken, teamData, mainData, subData, playerData });
 });
 
-// NextJS로 부터 Shuffle IAMGE 수신
+// NextJS로부터 Shuffle IMAGE 수신
 app.post('/send-image', upload.single('imageFile'), async (req, res) => {
     try {
         const message = req.body.message;  // formData의 message 필드
