@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" /> -->
+		<link rel="stylesheet" href="/fearless_styles.css" />
+	</head>
+	<body>
+		<div class="match_fearless">
+                        <div class="fearless_date">
+                            <%=lcgGameDate%>
+                        </div>
+			<div class="fearless_list">
+				<% mainData.forEach((gameSet, idx1) => { %>
+					<div class="fearless_box">
+						<% if(String(idx1).includes("0")) { %>
+							<div class="game_set">
+								<%=Number(gameSet.lcg_game_set.split("_")[1])%> 세트
+							</div>
+
+							<div class="champion_list">
+								<% 
+									const filtered = mainData
+									.filter(item => item.lcg_game_set === gameSet.lcg_game_set)
+									.sort((a, b) => a.lcg_line_order - b.lcg_line_order); 
+								%>
+								<% filtered.forEach((fearless, idx2) => { %>
+									<div class="champion_item">
+										<img src="<%=imageUrl1%>champion/<%=fearless.lcg_champion_name%>.png" alt="champion" class="champion_img" />
+										<% if(idx2 === 4) { %><div>/</div><% } %>
+									</div>
+								<% }); %>
+							</div>
+						<% } %>
+					</div>
+				<% }) %>
+			</div>
+		</div>
+	</body>
+</html>
