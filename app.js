@@ -133,6 +133,20 @@ const getPlayerData = async() => {
 	return data; 
 };
 
+const getFearlessData = async(gameSet) => {
+	const { data, error } = await supabase
+		.from("lcg_match_main")
+		.select("lcg_game_set, lcg_champion_name, lcg_line_order")
+		.like("lcg_game_set", `%${gameSet}%`);
+
+	if (error) {
+		console.error('Error fetching data:', error);
+	} else {
+		//console.log('Data:', data);
+	}
+	return data; 
+};
+
 
 const getGameDurationMin = (duration) => {
     let minute = Math.floor(duration / 60);
@@ -299,6 +313,27 @@ app.get('/history', async (req, res) => {
 	const lcgMaxDamageTaken = infoData[0].lcg_max_damage_taken;
 
 	res.render("history", { lcgGameDate, lcgGameVer, lcgGameDurationMin, lcgGameDurationSec, imageUrl1, imageUrl2, lcgMaxDamageTotal, lcgMaxDamageTaken, teamData, mainData, subData, playerData });
+});
+
+// 피어리스 이미지 생성
+app.get('/fearless', async (req, res) => {
+	res.set('Content-Type', 'text/html; charset=utf-8');
+
+	const calcDay = new Date(new Date().getTime() - 4 * 60 * 60 * 1000);
+	//const gameSet = (calcDay.getMonth()+1) + "/" + calcDay.getDate();
+	const gameSet = "9/21";
+
+	const infoData = await getInfoData();
+	const gameId = infoData[0].lcg_game_id;
+	const logData = await getLogData(gameId);
+	const etcData = await getEtcData();
+	const mainData = await getFearlessData(gameSet);
+
+	const lcgGameDate = logData[0].lcg_game_date.split("/")[0];
+    const imageUrl1 = etcData[0].lcg_main_image;
+    const imageUrl2 = etcData[0].lcg_sub_image;
+
+	res.render("fearless", { lcgGameDate, imageUrl1, imageUrl2, mainData });
 });
 
 // NextJS로부터 Shuffle IMAGE 수신
