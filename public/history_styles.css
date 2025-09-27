@@ -20,7 +20,7 @@ html, body {
 	height: 100%;
 	overflow-x: hidden;
 	color: white;
-	font-size: 65%;
+	font-size: 85%;
 	font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 body {
@@ -36,8 +36,8 @@ body {
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
-	width: 768px;
-	height: 860px;
+	width: 1400px;
+	height: 680px;
 	/* min-height: 860px; */
 	margin: 0 auto;
 	padding: 7px 30px;
@@ -51,7 +51,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	height: 50px;
+	height: 55px;
 	width: 100%;
 	padding: 7px 15px;
 	border-radius: 10px;
@@ -94,7 +94,7 @@ body {
 			text-align: center;
 			font-size: 1.3rem;
 			font-weight: 700;
-			line-height: 16px;
+			line-height: 26px;
 
 			.lcg_tab_left {
 				border-top-left-radius: 5px;
@@ -124,9 +124,13 @@ body {
 	}
 }
 
+.lcg_history_view {
+	display: flex;
+}
+
 table {
 	width: 700px;
-	margin: 5px 3px;
+	margin: 5px 10px;
 	border-collapse: collapse;
 	color: white;
 
@@ -190,8 +194,8 @@ table {
 
 						.bans_image {
 							display: block;
-							height: 30px;
-							width: 35px;
+							height: 40px;
+							width: 45px;
 							object-fit: cover;
 							opacity: .6;
 							transform: scale(1.2, 1.2);
@@ -315,7 +319,7 @@ table {
 
 				.lcg_champion {
 					position: relative;
-					width: 40px;
+					width: 54px;
 
 					.lcg_level {
 						position: absolute;
@@ -329,8 +333,8 @@ table {
 					}
 
 					.champion_image {
-						height: 40px;
-						width: 40px;
+						height: 50px;
+						width: 50px;
 						margin: 0 3px 0 0;
 					}
 				}
@@ -339,34 +343,35 @@ table {
 					width: 22px;
 
 					.spell_image {
-						height: 20px;
-						width: 20px;
+						height: 24px;
+						width: 24px;
 						margin: 0;
 					}
 				}
 
 				.lcg_perk {
-					width: 22px;
+					width: 20px;
+					margin: 0 0 0 3px;
 
 					.perk_image1 {
-						height: 22px;
-						width: 22px;
+						height: 26px;
+						width: 26px;
 						margin-top: 2px;
 					}
 
 					.perk_image2 {
-						height: 16px;
-						width: 16px;
-						margin: 0 0 3px;
+						height: 20px;
+						width: 20px;
+						margin: 0 2px 5px;
 					}
 				}
 			}
 
 			.lcg_summoner_name {
-				padding: 0 5px;
+				padding: 0 5px 10px;
 
 				.lcg_nickname {
-					width: 80px;
+					width: 90px;
 					margin: 0 auto;
 					padding-bottom: 3px;
 					white-space: nowrap;
@@ -376,7 +381,7 @@ table {
 			}
 
 			.lcg_mvp_icon {
-				height: 15px;
+				height: 20px;
 				width: fit-content;
 				padding: 0 8px;
 				margin: 2px auto 0;
@@ -384,7 +389,7 @@ table {
 				border-radius: 9px;
 				color: rgb(255, 255, 255);
 				text-align: center;
-				line-height: 15px;
+				line-height: 19px;
 				font-size: 1.1rem;
 				font-weight: normal;
 			}
@@ -392,7 +397,8 @@ table {
 	}
 
 	.lcg_kda {
-		width: 140px;
+		width: 120px;
+		padding-bottom: 14px;
 
 		.lcg_kda_head {
 			display: flex;
@@ -414,6 +420,7 @@ table {
 
 	.lcg_deal {
 		width: 130px;
+		padding-bottom: 14px;
 
 		.lcg_graph {
 			display: flex;
@@ -422,10 +429,11 @@ table {
 			padding-top: 4px;
 
 			.lcg_graph_total {
-				width: 50px;
-				height: 11px;
+				width: 60px;
+				height: 15px;
 				margin: 5px auto;
 				background-color: rgb(28 28 31 / 1);
+				border: 1px solid #ffffff;
 				border-radius: 4px;
 				overflow: hidden;
 			}
@@ -439,29 +447,31 @@ table {
 
 	.lcg_ward {
 		width: 60px;
+		padding-bottom: 14px;
 	}
 
 	.lcg_minion {
 		width: 60px;
+		padding-bottom: 14px;
 	}
 
 	.lcg_item {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: right;
-		width: 90px;
+		width: 70px;
 	}
 	
 	.item_image {
-		height: 22px;
-		width: 22px;
+		height: 26px;
+		width: 26px;
 		margin: 2px;
 		border-radius: 10px;
 	}
 
 	.empty_image {
-		height: 22px;
-		width: 22px;
+		height: 26px;
+		width: 26px;
 		border: 1px solid grey;
 	}
 

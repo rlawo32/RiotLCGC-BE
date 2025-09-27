@@ -27,8 +27,8 @@
 								<% filtered.forEach((fearless, idx2) => { %>
 									<div class="champion_item">
 										<img src="<%=imageUrl1%>champion/<%=fearless.lcg_champion_name%>.png" alt="champion" class="champion_img" />
-										<% if(idx2 === 4) { %><div>/</div><% } %>
 									</div>
+									<% if(idx2 === 4) { %><div class="champion_slash"></div><% } %>
 								<% }); %>
 							</div>
 						<% } %>

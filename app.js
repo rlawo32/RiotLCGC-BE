@@ -147,6 +147,22 @@ const getFearlessData = async(gameSet) => {
 	return data; 
 };
 
+const getLatestFearlessData = async(gameSet) => {
+	const { data, error } = await supabase
+		.from("lcg_match_main")
+		.select("lcg_game_set, lcg_champion_name, lcg_line_order")
+		.like("lcg_game_set", `%${gameSet}%`)
+		.order("lcg_game_id", { ascending: false })
+		.limit(1);
+
+	if (error) {
+		console.error('Error fetching data:', error);
+	} else {
+		//console.log('Data:', data);
+	}
+	return data; 
+};
+
 
 const getGameDurationMin = (duration) => {
     let minute = Math.floor(duration / 60);
@@ -155,6 +171,12 @@ const getGameDurationMin = (duration) => {
         minute += 1;
     }
     return minute;
+}
+
+const getLatestGameSet = () => {
+	const calcDay = new Date(new Date().getTime() - 4 * 60 * 60 * 1000);
+	const gameSet = (calcDay.getMonth()+1) + "/" + calcDay.getDate();
+    return gameSet;
 }
 
 const sendToDiscord = async (type, originPath, imageUrl) => {
@@ -210,7 +232,7 @@ const capture_history = async () => {
     const page = await browser.newPage();
 
     try {
-		await page.setViewport({ width: 850, height: 900 });
+		await page.setViewport({ width: 1500, height: 700 });
         await page.goto('http://localhost:8080/history', {
             waitUntil: 'networkidle2',
             timeout: 60000 
@@ -247,6 +269,16 @@ const capture_history = async () => {
 
 // 피어리스 이미지 캡쳐
 const capture_fearless = async () => {
+	const testSet = getLatestGameSet();
+	console.log(testSet);
+	const gameSet = "9/21";
+	const mainData = await getLatestFearlessData(gameSet);
+	console.log(mainData);
+	const setCount = Number(mainData[0].lcg_game_set.split("_")[1]);
+	
+	const heightAdd = 150;
+	const heightCalc = 140 + (heightAdd * setCount);
+	
     const browser = await puppeteer.launch({
         headless: 'new',
         args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -255,7 +287,7 @@ const capture_fearless = async () => {
     const page = await browser.newPage();
 
     try {
-		await page.setViewport({ width: 850, height: 900 });
+		await page.setViewport({ width: 850, height: heightCalc });
         await page.goto('http://localhost:8080/fearless', {
             waitUntil: 'networkidle2',
             timeout: 60000 
@@ -273,7 +305,7 @@ const capture_fearless = async () => {
 			);
 		});
 
-        await page.waitForSelector('.match_history', { timeout: 10000 }); 
+        await page.waitForSelector('.match_fearless', { timeout: 10000 }); 
 
         const filename = `screenshots/screenshot-${Date.now()}.png`;
         await page.screenshot({ path: filename, fullPage: true });
@@ -282,7 +314,7 @@ const capture_fearless = async () => {
         const imageUrl = await uploadToR2('F', filename);
         console.log(`Uploaded to R2: ${imageUrl}`);
 
-		await sendToDiscord("H", filename, imageUrl);
+		await sendToDiscord("F", filename, imageUrl);
     } catch (err) {
         console.error('Capture Fail :', err.message);
     } finally {
@@ -318,9 +350,7 @@ app.get('/history', async (req, res) => {
 // 피어리스 이미지 생성
 app.get('/fearless', async (req, res) => {
 	res.set('Content-Type', 'text/html; charset=utf-8');
-
-	const calcDay = new Date(new Date().getTime() - 4 * 60 * 60 * 1000);
-	//const gameSet = (calcDay.getMonth()+1) + "/" + calcDay.getDate();
+	// const gameSet = getLatestGameSet();
 	const gameSet = "9/21";
 
 	const infoData = await getInfoData();
@@ -374,7 +404,8 @@ const realtime_test = () => {
 			},
 			(payload) => {
 				console.log(payload);
-				capture_history();
+				//capture_history();
+				capture_fearless();
 			}
 		)
 		.subscribe(status => {
