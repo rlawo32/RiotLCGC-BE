@@ -392,26 +392,58 @@ app.post('/send-image', upload.single('imageFile'), async (req, res) => {
     }
 });
 
+let testChannel = null;
+let reconnectTimeout = null;
+
 const realtime_test = () => {
-    supabase
-		.channel('test_channel')
-		.on(
-			'postgres_changes',
-			{
-				event: 'INSERT', 
-				schema: 'public',
-				table: 'test',
-			},
-			(payload) => {
-				console.log(payload);
-				capture_history();
-				capture_fearless();
-			}
-		)
-		.subscribe(status => {
-			console.log('Realtime subscription status:', status);
-		});
-}
+    if (testChannel) {
+        console.log('Removing existing realtime channel before creating new one.');
+        supabase.removeChannel(testChannel);
+        testChannel = null;
+    }
+    
+    testChannel = supabase
+        .channel('test_channel')
+        .on(
+            'postgres_changes',
+            {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'test',
+            },
+            (payload) => {
+                console.log(payload);
+                //capture_history();
+                capture_fearless();
+            }
+        )
+        .on('error', (error) => {
+            console.error('Realtime subscription error:', error);
+            reconnect();
+        })
+        .on('close', () => {
+            console.warn('Realtime subscription closed.');
+            reconnect();
+        })
+        .subscribe(status => {
+            console.log('Realtime subscription status:', status);
+            if (status === 'SUBSCRIBED' && reconnectTimeout) {
+                clearTimeout(reconnectTimeout);
+                reconnectTimeout = null;
+            }
+        });
+
+    function reconnect() {
+        if (reconnectTimeout) return; // 이미 재접속 예약 중이면 무시
+        
+        console.log('Attempting to reconnect in 3 seconds...');
+        reconnectTimeout = setTimeout(() => {
+            reconnectTimeout = null;
+            console.log('Reconnecting now...');
+            realtime_test();
+        }, 3000);
+    }
+};
 
 const realtime_real = () => {
     supabase
