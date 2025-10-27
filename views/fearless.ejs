@@ -13,7 +13,7 @@
 			<div class="fearless_list">
 				<% mainData.forEach((gameSet, idx1) => { %>
 					<div class="fearless_box">
-						<% if(String(idx1).includes("0")) { %>
+						<% if(String(idx1).endsWith("0")) { %>
 							<div class="game_set">
 								<%=Number(gameSet.lcg_game_set.split("_")[1])%> 세트
 							</div>
@@ -26,7 +26,7 @@
 								%>
 								<% filtered.forEach((fearless, idx2) => { %>
 									<div class="champion_item">
-										<img src="<%=imageUrl1%>champion/<%=fearless.lcg_champion_name%>.png" alt="champion" class="champion_img" />
+										<img src="<%=imageUrl1%>champion/<%=fearless.lcg_champion_name%>.png" alt="champion" class="champion_img" style="width:<%= dataLength < 70 ? 65 : 50 %>px; height:<%= dataLength < 70 ? 65 : 50 %>px;"/>
 									</div>
 									<% if(idx2 === 4) { %><div class="champion_slash"></div><% } %>
 								<% }); %>
