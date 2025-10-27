@@ -315,8 +315,9 @@ app.get('/fearless', async (req, res) => {
 	const lcgGameDate = logData[0].lcg_game_date.split("/")[0];
     const imageUrl1 = etcData[0].lcg_main_image;
     const imageUrl2 = etcData[0].lcg_sub_image;
+	const dataLength = mainData.length;
 
-	res.render("fearless", { lcgGameDate, imageUrl1, imageUrl2, mainData });
+	res.render("fearless", { lcgGameDate, imageUrl1, imageUrl2, mainData, dataLength });
 });
 
 // NextJS로부터 Shuffle IMAGE 수신
