@@ -273,7 +273,27 @@
 						</thead>
 						<tbody>
 							<% mainData.filter((lcgFilter) => lcgFilter.lcg_team_id === lcgTeam.lcg_team_id).forEach((lcgMain, i) => { %>
-								<tr>
+								<tr style="background-image:<%= 
+									lcgMain.lcg_winning_streak > 4 ? "url('"+imageUrl+"public/redbluefire.png')"
+									:
+									lcgMain.lcg_winning_streak > 2 ? "url('"+imageUrl+"public/redfire.png')"
+									:
+									""
+								%>;background-size:<%= 
+									lcgMain.lcg_winning_streak > 4 ? '100%' : '50%';
+								%>;background-position:0 <%= 
+									lcgMain.lcg_winning_streak === 3 ? '-155px'
+									:
+									lcgMain.lcg_winning_streak === 4 ? '-190px'
+									:
+									lcgMain.lcg_winning_streak === 5 ? '-350px'
+									:
+									lcgMain.lcg_winning_streak === 6 ? '-390px'
+									:
+									lcgMain.lcg_winning_streak >= 7 ? '0px'
+									:
+									'0px'
+								%>;background-repeat:'repeat-x';">
 									<td class="lcg_summoner">
 										<div class="lcg_summoner_wrap">
 											<div class="lcg_summoner_info">
@@ -283,6 +303,27 @@
 													<div class="lcg_sub_data lcg_level">
 														<%=lcgMain.lcg_champion_level%>
 													</div>
+													<% if(lcgMain.lcg_winning_streak > 1 || lcgMain.lcg_winning_streak < -1) { %>
+														<div class="lcg_winning_streak" style="background-color:<%= 
+															lcgMain.lcg_winning_streak > 6 ? '#8B0000'
+															:
+															lcgMain.lcg_winning_streak > 4 ? '#FF4500'
+															:
+															lcgMain.lcg_winning_streak > 2 ? '#D4AF37'
+															:
+															lcgMain.lcg_winning_streak < -3 ? '#3A5F7D'
+															:
+															lcgMain.lcg_winning_streak < -1 ? '#5D6D7E'
+															:
+															'#9E9EB1'
+														%>;">
+															<% if(lcgMain.lcg_winning_streak > 1) { %>
+																<%=lcgMain.lcg_winning_streak%>&nbsp;연승
+															<% } else { %>
+																<%=Math.abs(lcgMain.lcg_winning_streak)%>&nbsp;연패
+															<% } %>
+														</div>
+													<% } %>
 												</div>
 												<div class="lcg_spell">
 													<img src="<%=imageUrl1%>spell/<%=lcgMain.lcg_spell_name_1%>.png" 
@@ -299,7 +340,7 @@
 											</div>
 											<div class="lcg_summoner_name">
 												<div class="lcg_nickname">
-													<%= playerData.find((lcgPlayer) => lcgPlayer.lcg_summoner_puuid === lcgMain.lcg_summoner_puuid).lcg_summoner_name %>
+													<%= lcgMain.lcg_summoner_nickname.split('#')[0] %>
 												</div>
 												<div class="lcg_mvp_icon" style="background-color:<%= 
 													lcgMain.lcg_mvp_rank.includes("M") ? '#EB9C00'
@@ -343,31 +384,31 @@
 											<div class="lcg_damage">
 												<%= (lcgMain.lcg_damage_total).toLocaleString() %>
 												<div class="lcg_graph_total">
-													<div class="lcg_graph_target" style="width:<%= lcgMain.lcg_damage_total / lcgMaxDamageTotal * 100 %>%; background-color:#E84057;">
+													<div class="lcg_graph_target" style="width:<%= lcgMain.lcg_damage_total / lcgMain.lcg_max_damage_total * 100 %>%; background-color:#E84057;">
 													</div>
 												</div>
 											</div>
 											<div class="lcg_taken">
 												<%= (lcgMain.lcg_damage_taken).toLocaleString() %>
 												<div class="lcg_graph_total">
-													<div class="lcg_graph_target" style="width:<%= lcgMain.lcg_damage_taken / lcgMaxDamageTaken * 100 %>%; background-color:#7B7A8E;">
+													<div class="lcg_graph_target" style="width:<%= lcgMain.lcg_damage_taken / lcgMain.lcg_max_damage_taken * 100 %>%; background-color:#7B7A8E;">
 													</div>
 												</div>
 											</div>
 										</div>
 									</td>
 									<td class="lcg_ward">
-										<%= subData.find((lcgSub) => lcgSub.lcg_participant_id === lcgMain.lcg_participant_id).lcg_destroy_ward %>
+										<%= lcgMain.lcg_destroy_ward %>
 										<div class="lcg_sub_data lcg_ward_count">
-											<%= subData.find((lcgSub) => lcgSub.lcg_participant_id === lcgMain.lcg_participant_id).lcg_normal_ward %>
+											<%= lcgMain.lcg_normal_ward %>
 											/
-											<%= subData.find((lcgSub) => lcgSub.lcg_participant_id === lcgMain.lcg_participant_id).lcg_vision_ward %>
+											<%= lcgMain.lcg_vision_ward %>
 										</div>
 									</td>
 									<td class="lcg_minion">
-										<%= lcgMain.lcg_minion_count + lcgMain.lcg_jungle_count %>
+										<%= lcgMain.cs %>
 										<div class="lcg_sub_data lcg_minute_cs">
-											분당 <%= ((lcgMain.lcg_minion_count + lcgMain.lcg_jungle_count) / lcgGameDurationMin).toFixed(1) %>
+											분당 <%= (lcgMain.cs / lcgGameDurationMin).toFixed(1) %>
 										</div>
 									</td>
 									<td class="lcg_item">
