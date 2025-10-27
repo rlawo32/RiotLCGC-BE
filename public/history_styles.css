@@ -337,6 +337,24 @@ table {
 						width: 50px;
 						margin: 0 3px 0 0;
 					}
+
+					.lcg_winning_streak {
+						position: absolute;
+						top: -10px;
+						left: 50%;
+						transform: translateX(-54%);
+						width: 32px;
+						height: 16px;
+						padding: 0 4px;
+						margin: 2px auto 0;
+						border: none;
+						border-radius: 9px;
+						color: #FFFFFF;
+						text-align: center;
+						line-height: 16px;
+						font-size: .8rem;
+						font-weight: 700;
+					}
 				}
 
 				.lcg_spell {
