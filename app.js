@@ -34,26 +34,12 @@ const supabase = require('./supabase.js');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-const getInfoData = async() => {
-	const { data, error } = await supabase
-		.from("lcg_match_info")
-		.select("lcg_game_id, lcg_game_duration, lcg_max_damage_total, lcg_max_damage_taken")
-		.order("lcg_game_id", { ascending: false })
-		.limit(1)
-
-	if (error) {
-		console.error('Error fetching data:', error);
-	} else {
-		//console.log('Data:', data);
-	}
-	return data; 
-};
-
-const getLogData = async(gameId) => {
+const getLogData = async() => {
 	const { data, error } = await supabase
 		.from('lcg_match_log')
-		.select('lcg_game_ver, lcg_game_date')
-		.eq("lcg_game_id", gameId);
+		.select('lcg_game_id, lcg_game_ver, lcg_game_date')
+		.order("lcg_game_id", { ascending: false })
+		.limit(1);
 
 	if (error) {
 		console.error('Error fetching data:', error);
@@ -94,36 +80,9 @@ const getTeamData = async(gameId) => {
 
 const getMainData = async(gameId) => {
 	const { data, error } = await supabase
-		.from("lcg_match_main")
+		.rpc("match_history")
 		.select("*")
 		.eq("lcg_game_id", gameId);
-
-	if (error) {
-		console.error('Error fetching data:', error);
-	} else {
-		//console.log('Data:', data);
-	}
-	return data; 
-};
-
-const getSubData = async(gameId) => {
-	const { data, error } = await supabase
-		.from("lcg_match_sub")
-		.select("*")
-		.eq("lcg_game_id", gameId);
-
-	if (error) {
-		console.error('Error fetching data:', error);
-	} else {
-		//console.log('Data:', data);
-	}
-	return data; 
-};
-
-const getPlayerData = async() => {
-	const { data, error } = await supabase
-		.from("lcg_player_data")
-		.select("lcg_summoner_puuid, lcg_player, lcg_summoner_name, lcg_summoner_nickname, lcg_player_hide");
 
 	if (error) {
 		console.error('Error fetching data:', error);
@@ -162,7 +121,6 @@ const getLatestFearlessData = async(gameSet) => {
 	}
 	return data; 
 };
-
 
 const getGameDurationMin = (duration) => {
     let minute = Math.floor(duration / 60);
@@ -326,25 +284,21 @@ const capture_fearless = async () => {
 app.get('/history', async (req, res) => {
 	res.set('Content-Type', 'text/html; charset=utf-8');
 
-	const infoData = await getInfoData();
-	const gameId = infoData[0].lcg_game_id;
-	const logData = await getLogData(gameId);
+	const logData = await getLogData();
+	const gameId = logData[0].lcg_game_id;
 	const etcData = await getEtcData();
 	const teamData = await getTeamData(gameId);
 	const mainData = await getMainData(gameId);
-	const subData = await getSubData(gameId);
-	const playerData = await getPlayerData();
 
 	const lcgGameDate = logData[0].lcg_game_date.substring(0, 10);
 	const lcgGameVer = logData[0].lcg_game_ver;
-	const lcgGameDurationMin = getGameDurationMin(infoData[0].lcg_game_duration);
-	const lcgGameDurationSec = String(infoData[0].lcg_game_duration % 60).padStart(2, '0');
+	const lcgGameDurationMin = getGameDurationMin(mainData[0].lcg_game_duration);
+	const lcgGameDurationSec = String(mainData[0].lcg_game_duration % 60).padStart(2, '0');
+	const imageUrl = etcData[0].lcg_r2_image;
     const imageUrl1 = etcData[0].lcg_main_image;
     const imageUrl2 = etcData[0].lcg_sub_image;
-	const lcgMaxDamageTotal = infoData[0].lcg_max_damage_total;
-	const lcgMaxDamageTaken = infoData[0].lcg_max_damage_taken;
 
-	res.render("history", { lcgGameDate, lcgGameVer, lcgGameDurationMin, lcgGameDurationSec, imageUrl1, imageUrl2, lcgMaxDamageTotal, lcgMaxDamageTaken, teamData, mainData, subData, playerData });
+	res.render("history", { lcgGameDate, lcgGameVer, lcgGameDurationMin, lcgGameDurationSec, imageUrl, imageUrl1, imageUrl2, teamData, mainData });
 });
 
 // 피어리스 이미지 생성
@@ -352,9 +306,8 @@ app.get('/fearless', async (req, res) => {
 	res.set('Content-Type', 'text/html; charset=utf-8');
 	const gameSet = getLatestGameSet();
 
-	const infoData = await getInfoData();
-	const gameId = infoData[0].lcg_game_id;
-	const logData = await getLogData(gameId);
+	const logData = await getLogData();
+	const gameId = logData[0].lcg_game_id;
 	const etcData = await getEtcData();
 	const mainData = await getFearlessData(gameSet);
 	mainData.sort((a, b) => a.row_num - b.row_num);
