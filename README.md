@@ -52,4 +52,5 @@ LCG 프로젝트 중 LCGC-BE는 커스텀 게임 결과를 이미지로 캡쳐�
 
 ## 🔗 참고 사이트
 
-
++ DISCORD - [DISCORD WebHook](https://support.discord.com/hc/ko/articles/228383668-%EC%9B%B9%ED%9B%85%EC%9D%84-%EC%86%8C%EA%B0%9C%ED%95%A9%EB%8B%88%EB%8B%A4)
++ SUPABASE - [SUPABASE Docs](https://supabase.com/docs/reference/javascript/introduction)
