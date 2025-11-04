@@ -24,11 +24,12 @@ app.use(cors({
 }));
 
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Test app listening on port ${port}`)
+    console.log(`LCGC-BE app listening on port ${port}`)
 })
 
 app.get('/ping', (req, res) => {
-  res.status(200).send('ok');
+    console.log(`UptimeRobot ping request received`)
+  	res.status(200).send('ok');
 });
 
 require('dotenv').config();
