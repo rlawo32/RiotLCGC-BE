@@ -165,6 +165,7 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
 			form.append('content', `${date} 팀 셔플 결과\n${imageUrl}`);
 			webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
 		}
+		webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST; // TEST
 
         await axios.post(webhookUrl, form, {
             headers: form.getHeaders()
@@ -226,7 +227,8 @@ const capture_history = async () => {
 
 // 피어리스 이미지 캡쳐
 const capture_fearless = async () => {
-	const gameSet = getLatestGameSet();
+	//const gameSet = getLatestGameSet();
+	const gameSet = "10/02"; // TEST
 	const mainData = await getLatestFearlessData(gameSet);
 	console.log(gameSet);
 	console.log(mainData);
@@ -277,6 +279,8 @@ const capture_fearless = async () => {
 		} finally {
 			await browser.close();
 		}
+	} else {
+		console.log(`Capture Fail : No Data`);
 	}
 }
 
@@ -304,7 +308,8 @@ app.get('/history', async (req, res) => {
 // 피어리스 이미지 생성
 app.get('/fearless', async (req, res) => {
 	res.set('Content-Type', 'text/html; charset=utf-8');
-	const gameSet = getLatestGameSet();
+	// const gameSet = getLatestGameSet();
+	const gameSet = "10/02"; // TEST
 
 	const logData = await getLogData();
 	const gameId = logData[0].lcg_game_id;
@@ -347,7 +352,9 @@ app.post('/send-image', upload.single('imageFile'), async (req, res) => {
 });
 
 let testChannel = null;
-let reconnectTimeout = null;
+let testReconnectTimeout = null;
+let realChannel = null;
+let realReconnectTimeout = null;
 
 const realtime_test = () => {
     if (testChannel) {
@@ -367,7 +374,7 @@ const realtime_test = () => {
             },
             (payload) => {
                 console.log(payload);
-                //capture_history();
+                capture_history();
                 capture_fearless();
             }
         )
@@ -381,18 +388,18 @@ const realtime_test = () => {
         })
         .subscribe(status => {
             console.log('Realtime subscription status:', status);
-            if (status === 'SUBSCRIBED' && reconnectTimeout) {
-                clearTimeout(reconnectTimeout);
-                reconnectTimeout = null;
+            if (status === 'SUBSCRIBED' && testReconnectTimeout) {
+                clearTimeout(reconnectTtestReconnectTimeoutimeout);
+                testReconnectTimeout = null;
             }
         });
 
     function reconnect() {
-        if (reconnectTimeout) return; // 이미 재접속 예약 중이면 무시
+        if (testReconnectTimeout) return; // 이미 재접속 예약 중이면 무시
         
         console.log('Attempting to reconnect in 3 seconds...');
-        reconnectTimeout = setTimeout(() => {
-            reconnectTimeout = null;
+        testReconnectTimeout = setTimeout(() => {
+            testReconnectTimeout = null;
             console.log('Reconnecting now...');
             realtime_test();
         }, 3000);
@@ -400,7 +407,13 @@ const realtime_test = () => {
 };
 
 const realtime_real = () => {
-    supabase
+    if (realChannel) {
+        console.log('Removing existing realtime channel before creating new one.');
+        supabase.removeChannel(realChannel);
+        realChannel = null;
+    }
+    
+    realChannel = supabase
 		.channel('real_channel')
 		.on(
 			'postgres_changes',
@@ -415,9 +428,32 @@ const realtime_real = () => {
 				capture_fearless();
 			}
 		)
-		.subscribe(status => {
-			console.log('Realtime subscription status:', status);
-		});
+        .on('error', (error) => {
+            console.error('Realtime subscription error:', error);
+            reconnect();
+        })
+        .on('close', () => {
+            console.warn('Realtime subscription closed.');
+            reconnect();
+        })
+        .subscribe(status => {
+            console.log('Realtime subscription status:', status);
+            if (status === 'SUBSCRIBED' && realReconnectTimeout) {
+                clearTimeout(realReconnectTimeout);
+                realReconnectTimeout = null;
+            }
+        });
+
+    function reconnect() {
+        if (realReconnectTimeout) return; // 이미 재접속 예약 중이면 무시
+        
+        console.log('Attempting to reconnect in 3 seconds...');
+        realReconnectTimeout = setTimeout(() => {
+            realReconnectTimeout = null;
+            console.log('Reconnecting now...');
+            realtime_real();
+        }, 3000);
+    }
 }
 
 realtime_test();
