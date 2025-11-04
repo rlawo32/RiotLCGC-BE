@@ -27,6 +27,10 @@ app.listen(port, '0.0.0.0', () => {
     console.log(`Test app listening on port ${port}`)
 })
 
+app.get('/ping', (req, res) => {
+  res.status(200).send('ok');
+});
+
 require('dotenv').config();
 const { uploadToR2 } = require('./r2_upload');
 
