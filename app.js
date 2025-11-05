@@ -7,36 +7,11 @@ const supabase = require('./supabase.js');
 const app = express();
 const port = 8080;
 
-app.set('view engine', 'ejs');
-app.use(express.static('public'));
-
-const allowedOrigins = ['http://localhost:3001', 'http://localhost:3000', 'http://localhost:8080', 'https://rabbitgang.vercel.app'];
-app.use(cors({
-  	origin: function (origin, callback) {
-    	if(!origin) return callback(null, true);
-    	if(allowedOrigins.includes(origin)) {
-      		return callback(null, true);
-    	} else {
-      		return callback(new Error('Not allowed by CORS'));
-    	}
-  	}
-}));
-
-app.listen(port, '0.0.0.0', () => {
-    console.log(`LCGC-BE app listening on port ${port}`)
-})
-
-app.get('/ping', (req, res) => {
-    console.log(`UptimeRobot ping request received`)
-  	res.status(200).send('ok');
-});
-
 const { uploadToR2 } = require('./capture/r2-upload.js');
 const { sendToDiscord } = require('./discord/discord-send.js');
 const { captureToView } = require('./capture/view-capture.js');
-
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const client = require('./discord/discord-bot.js');
+client.login(process.env.DISCORD_BOT_TOKEN);
 
 const getLogData = async() => {
 	const { data, error } = await supabase
@@ -135,6 +110,31 @@ const getLatestGameSet = () => {
     return gameSet;
 }
 
+app.set('view engine', 'ejs');
+app.use(express.static('public'));
+
+const allowedOrigins = ['http://localhost:3001', 'http://localhost:3000', 'http://localhost:8080', 'https://rabbitgang.vercel.app'];
+app.use(cors({
+  	origin: function (origin, callback) {
+    	if(!origin) return callback(null, true);
+    	if(allowedOrigins.includes(origin)) {
+      		return callback(null, true);
+    	} else {
+      		return callback(new Error('Not allowed by CORS'));
+    	}
+  	}
+}));
+
+app.listen(port, '0.0.0.0', () => {
+    console.log(`LCGC-BE app listening on port ${port}`)
+})
+
+// Sleep 방지
+app.get('/ping', (req, res) => {
+    console.log(`UptimeRobot ping request received`)
+  	res.status(200).send('ok');
+});
+
 // 최신 전적 이미지 생성
 app.get('/history', async (req, res) => {
 	res.set('Content-Type', 'text/html; charset=utf-8');
@@ -175,6 +175,9 @@ app.get('/fearless', async (req, res) => {
 
 	res.render("fearless", { lcgGameDate, imageUrl1, imageUrl2, mainData, dataLength });
 });
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // NextJS로부터 Shuffle IMAGE 수신
 app.post('/send-image', upload.single('imageFile'), async (req, res) => {
