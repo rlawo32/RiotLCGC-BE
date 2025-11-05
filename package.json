@@ -20,6 +20,7 @@
     "express": "^5.1.0",
     "form-data": "^4.0.4",
     "multer": "^2.0.2",
-    "puppeteer": "^24.16.1"
+    "puppeteer": "^24.16.1",
+    "discord.js": "^14.15.3"
   }
 }
