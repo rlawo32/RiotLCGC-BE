@@ -26,16 +26,20 @@ LCG 프로젝트 중 LCGC-BE는 커스텀 게임 결과를 이미지로 캡쳐�
 
 ## 📋 구현 목록
 
-+ Oracle Cloud에 NodeJS Express 서버 구동(PM2) ✅ <br/>
++ Oracle Cloud에 NodeJS Express 서버 구동(PM2) ❌ <br/>
++ Render 사이트에서 배포 진행(구동 서버 이동 및 통신 테스트) ✅ <br/>
++ Puppeteer Chrome 브라우지 이슈 해결 ✅ <br/>
 + SUPABASE 통신 및 데이터 추출 ✅ <br/>
-+ EJS 구성 및 Puppeteer 렌더링 ✅ <br/>
-+ 페이지 캡쳐 설정 ✅ <br/>
-+ DISCORD, R2 연동 ✅ <br/>
++ EJS 구성 및 Puppeteer 렌더링, 페이지 캡쳐 설정 ✅ <br/>
++ DISCORD Webhook, R2 연동 ✅ <br/>
 + SUPABASE Realtime 적용 ✅ <br/>
 + 캡쳐 이미지 DISCORD 전송 체크 ✅ <br/>
 + 팀 짜기 결과 이미지 전송 기능 ✅ <br/>
 + Fearless 규칙, 게임 세트 별 챔피언 이미지 생성 후 전송 ✅ <br/>
-+ Realtime 구독 오류 체크 🚧 <br/>
++ Realtime 구독 오류 체크 및 이미지 전송 후 로컬 이미지 삭제 ✅ <br/>
++ Discord BOT 연동 - Command 등록(전적 검색) 🚧 <br/>
++ Discord BOT 연동 - Command 기능 동작 작업(통신 및 결과 출력) 🚧 <br/>
++ Discord Embed 생성 작업 🚧 <br/>
 + JS 코드 파일 분리 작업 🚧 <br/>
 
 <br/>
