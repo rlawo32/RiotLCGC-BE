@@ -16,7 +16,7 @@ const s3 = new AWS.S3({
         signatureVersion: 'v4',
 });
 
-async function uploadToR2(type, file) {
+const uploadToR2 = async (type, file) => {
         let addPath = '';
         let buffer = '';
         if(type === 'H') { // History

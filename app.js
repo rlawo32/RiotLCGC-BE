@@ -1,10 +1,9 @@
-const puppeteer = require('puppeteer');
+require('dotenv').config();
+
 const multer = require('multer');
-const fs = require('fs').promises;
 const cors = require('cors');
-const axios = require('axios');
-const FormData = require('form-data');
 const express = require('express');
+const supabase = require('./supabase.js');
 const app = express();
 const port = 8080;
 
@@ -13,14 +12,14 @@ app.use(express.static('public'));
 
 const allowedOrigins = ['http://localhost:3001', 'http://localhost:3000', 'http://localhost:8080', 'https://rabbitgang.vercel.app'];
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'));
-    }
-  }
+  	origin: function (origin, callback) {
+    	if(!origin) return callback(null, true);
+    	if(allowedOrigins.includes(origin)) {
+      		return callback(null, true);
+    	} else {
+      		return callback(new Error('Not allowed by CORS'));
+    	}
+  	}
 }));
 
 app.listen(port, '0.0.0.0', () => {
@@ -32,10 +31,10 @@ app.get('/ping', (req, res) => {
   	res.status(200).send('ok');
 });
 
-require('dotenv').config();
-const { uploadToR2 } = require('./r2_upload');
+const { uploadToR2 } = require('./capture/r2-upload.js');
+const { sendToDiscord } = require('./discord/discord-send.js');
+const { captureToView } = require('./capture/view-capture.js');
 
-const supabase = require('./supabase.js');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -45,7 +44,6 @@ const getLogData = async() => {
 		.select('lcg_game_id, lcg_game_ver, lcg_game_date')
 		.order("lcg_game_id", { ascending: false })
 		.limit(1);
-
 	if (error) {
 		console.error('Error fetching data:', error);
 	} else {
@@ -60,7 +58,6 @@ const getEtcData = async() => {
 		.select("lcg_main_image, lcg_sub_image, lcg_r2_image")
 		.order("lcg_update_date", { ascending: false })
 		.limit(1);
-
 	if (error) {
 		console.error('Error fetching data:', error);
 	} else {
@@ -74,7 +71,6 @@ const getTeamData = async(gameId) => {
 		.from("lcg_match_team")
 		.select("*")
 		.eq("lcg_game_id", gameId);
-
 	if (error) {
 		console.error('Error fetching data:', error);
 	} else {
@@ -88,7 +84,6 @@ const getMainData = async(gameId) => {
 		.rpc("match_history")
 		.select("*")
 		.eq("lcg_game_id", gameId);
-
 	if (error) {
 		console.error('Error fetching data:', error);
 	} else {
@@ -102,7 +97,6 @@ const getFearlessData = async(gameSet) => {
 		.from("lcg_match_main")
 		.select("row_num, lcg_game_set, lcg_champion_name, lcg_line_order")
 		.like("lcg_game_set", `%${gameSet}%`);
-
 	if (error) {
 		console.error('Error fetching data:', error);
 	} else {
@@ -118,7 +112,6 @@ const getLatestFearlessData = async(gameSet) => {
 		.like("lcg_game_set", `%${gameSet}%`)
 		.order("lcg_game_id", { ascending: false })
 		.limit(1);
-
 	if (error) {
 		console.error('Error fetching data:', error);
 	} else {
@@ -140,161 +133,6 @@ const getLatestGameSet = () => {
 	const calcDay = new Date(new Date().getTime() - 4 * 60 * 60 * 1000);
 	const gameSet = (calcDay.getMonth()+1) + "/" + String(calcDay.getDate()).padStart(2, "0");
     return gameSet;
-}
-
-const sendToDiscord = async (type, originPath, imageUrl) => {
-    try {
-		const today = new Date();
-		const year = today.getFullYear();
-		const month = String(today.getMonth() + 1).padStart(2, '0');  // 0부터 시작하므로 +1
-		const day = String(today.getDate()).padStart(2, '0');
-		const date = `${year}-${month}-${day}`;
-
-        const form = new FormData();
-		let webhookUrl = '';
-
-/*
-		if(type === "M") {
-        	form.append('file', fs.createReadStream(file));
-		} else if(type === "S") {
-        	form.append('file', file, { filename: 'capture.png' });
-		}
-*/
-		if(type === "H") {
-			form.append('content', `${date} 최신 전적 업데이트!\n사이트이동 -> https://rabbitgang.vercel.app\n${imageUrl}`);
-			webhookUrl = process.env.DISCORD_WEBHOOK_URL_HISTORY;
-		} else if(type === "F") {
-			form.append('content', `${date} 피어리스 업데이트!\n${imageUrl}`);
-			webhookUrl = process.env.DISCORD_WEBHOOK_URL_FEARLESS;
-		} else if(type === "S") {
-			form.append('content', `${date} 팀 셔플 결과\n${imageUrl}`);
-			webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
-		}
-		webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST; // TEST
-
-        await axios.post(webhookUrl, form, {
-            headers: form.getHeaders()
-        });
-		if(type === "H" || type === "F") {
-			try {
-				await fs.unlink(originPath); // 로컬 파일 제거
-				console.log(`Cleanup Success: Removed local file ${originPath}`);
-			} catch (error) {
-				// 파일 제거 실패 시 (예: 파일이 존재하지 않거나 권한 문제)
-				console.error(`Cleanup Error: Failed to remove local file ${originPath}`, error);
-			}
-		} 
-
-        console.log('Discord transfer complete!');
-    } catch (error) {
-        console.error('Discord transmission failed : ', error.message);
-    }
-};
-
-// 최신 전적 이미지 캡쳐
-const capture_history = async () => {
-    const browser = await puppeteer.launch({
-	    // executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
-	    headless: 'new',
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-
-    const page = await browser.newPage();
-
-    try {
-		await page.setViewport({ width: 1500, height: 700 });
-        await page.goto('http://localhost:8080/history', {
-            waitUntil: 'networkidle2',
-            timeout: 60000 
-        });
-
-		await page.evaluate(() => {
-			return Promise.all(
-				Array.from(document.images).map(img => {
-				if (img.complete) return Promise.resolve();
-					return new Promise((resolve) => {
-						img.onload = resolve;
-						img.onerror = resolve;
-					});
-				})
-			);
-		});
-
-        await page.waitForSelector('.match_history', { timeout: 10000 }); 
-
-        const filename = `screenshots/screenshot-${Date.now()}.png`;
-        await page.screenshot({ path: filename, fullPage: true });
-        console.log(`Capture Success : ${filename}`);
-		
-        const imageUrl = await uploadToR2('H', filename);
-        console.log(`Uploaded to R2: ${imageUrl}`);
-
-		await sendToDiscord("H", filename, imageUrl);
-    } catch (err) {
-        console.error('Capture Fail :', err.message);
-    } finally {
-        await browser.close();
-    }
-}
-
-// 피어리스 이미지 캡쳐
-const capture_fearless = async () => {
-	//const gameSet = getLatestGameSet();
-	const gameSet = "10/02"; // TEST
-	const mainData = await getLatestFearlessData(gameSet);
-	console.log(gameSet);
-	console.log(mainData);
-	if(mainData.length > 0) {
-		const setCount = Number(mainData[0].lcg_game_set.split("_")[1]);
-		
-		const heightAdd = 150;
-		const heightCalc = 140 + (heightAdd * setCount);
-		
-		const browser = await puppeteer.launch({
-	    	// executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
-	    	headless: 'new',
-			args: ['--no-sandbox', '--disable-setuid-sandbox']
-		});
-
-		const page = await browser.newPage();
-
-		try {
-			await page.setViewport({ width: 850, height: heightCalc });
-			await page.goto('http://localhost:8080/fearless', {
-				waitUntil: 'networkidle2',
-				timeout: 60000 
-			});
-
-			await page.evaluate(() => {
-				return Promise.all(
-					Array.from(document.images).map(img => {
-					if (img.complete) return Promise.resolve();
-						return new Promise((resolve) => {
-							img.onload = resolve;
-							img.onerror = resolve;
-						});
-					})
-				);
-			});
-
-			await page.waitForSelector('.match_fearless', { timeout: 10000 }); 
-
-			const filename = `screenshots/screenshot-${Date.now()}.png`;
-			await page.screenshot({ path: filename, fullPage: true });
-			console.log(`Capture Success : ${filename}`);
-			
-			const imageUrl = await uploadToR2('F', filename);
-			console.log(`Uploaded to R2: ${imageUrl}`);
-
-			await sendToDiscord("F", filename, imageUrl);
-		} catch (err) {
-			console.error('Capture Fail :', err.message);
-		} finally {
-			await browser.close();
-		}
-	} else {
-		console.log(`Capture Fail : No Data`);
-	}
 }
 
 // 최신 전적 이미지 생성
@@ -385,10 +223,17 @@ const realtime_test = () => {
                 schema: 'public',
                 table: 'test',
             },
-            (payload) => {
+            async (payload) => {
                 console.log(payload);
-                capture_history();
-                capture_fearless();
+				await captureToView('H', 0);
+				//const gameSet = getLatestGameSet();
+				const gameSet = "10/02"; // TEST
+				const mainData = await getLatestFearlessData(gameSet);
+				console.log(gameSet);
+				console.log(mainData);
+				if(mainData.length > 0) {
+					await captureToView('F', Number(mainData[0].lcg_game_set.split("_")[1]));
+				}	
             }
         )
         .on('error', (error) => {
@@ -435,11 +280,18 @@ const realtime_real = () => {
 				schema: 'public',
 				table: 'lcg_match_info',
 			},
-			(payload) => {
-				console.log(payload);
-				capture_history();
-				capture_fearless();
-			}
+            async (payload) => {
+                console.log(payload);
+				await captureToView('H', 0);
+				//const gameSet = getLatestGameSet();
+				const gameSet = "10/02"; // TEST
+				const mainData = await getLatestFearlessData(gameSet);
+				console.log(gameSet);
+				console.log(mainData);
+				if(mainData.length > 0) {
+					await captureToView('F', Number(mainData[0].lcg_game_set.split("_")[1]));
+				}	
+            }
 		)
         .on('error', (error) => {
             console.error('Realtime subscription error:', error);
