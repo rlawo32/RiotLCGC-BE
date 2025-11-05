@@ -4,17 +4,17 @@ const { REST, Routes, SlashCommandBuilder } = require('discord.js');
 const commands = [
   new SlashCommandBuilder()
     .setName('record')
-    .setDescription('사용자의 기록을 조회합니다.')
+    .setDescription('플레이어의 기록을 조회합니다.')
     .addStringOption(option =>
       option
-        .setName('name') 
-        .setDescription('조회할 사용자 이름을 입력하세요.')
+        .setName('nickname') 
+        .setDescription('조회할 플레이어 닉네임을 입력하세요.')
         .setRequired(true)
     )
     .toJSON(),
 ];
 
-const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN);
 
 (async () => {
   try {
