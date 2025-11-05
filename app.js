@@ -188,7 +188,7 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
 // 최신 전적 이미지 캡쳐
 const capture_history = async () => {
     const browser = await puppeteer.launch({
-	    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
+	    // executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
 	    headless: 'new',
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
@@ -245,7 +245,7 @@ const capture_fearless = async () => {
 		const heightCalc = 140 + (heightAdd * setCount);
 		
 		const browser = await puppeteer.launch({
-	    	executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
+	    	// executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
 	    	headless: 'new',
 			args: ['--no-sandbox', '--disable-setuid-sandbox']
 		});
