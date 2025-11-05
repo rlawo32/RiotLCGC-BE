@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const multer = require('multer');
-const fs = require('fs');
+const fs = require('fs').promises;
 const cors = require('cors');
 const axios = require('axios');
 const FormData = require('form-data');
