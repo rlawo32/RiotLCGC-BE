@@ -189,7 +189,7 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
 const capture_history = async () => {
     const browser = await puppeteer.launch({
 	    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
-	    headless: true,
+	    headless: 'new',
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -246,7 +246,7 @@ const capture_fearless = async () => {
 		
 		const browser = await puppeteer.launch({
 	    	executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome',
-	    	headless: true,
+	    	headless: 'new',
 			args: ['--no-sandbox', '--disable-setuid-sandbox']
 		});
 
