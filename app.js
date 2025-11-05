@@ -176,7 +176,13 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
             headers: form.getHeaders()
         });
 		if(type === "H" || type === "F") {
-			fs.unlinkSync(originPath);
+			try {
+				await fs.unlink(originPath); // 로컬 파일 제거
+				console.log(`Cleanup Success: Removed local file ${originPath}`);
+			} catch (error) {
+				// 파일 제거 실패 시 (예: 파일이 존재하지 않거나 권한 문제)
+				console.error(`Cleanup Error: Failed to remove local file ${originPath}`, error);
+			}
 		} 
 
         console.log('Discord transfer complete!');
@@ -224,14 +230,6 @@ const capture_history = async () => {
         console.log(`Uploaded to R2: ${imageUrl}`);
 
 		await sendToDiscord("H", filename, imageUrl);
-
-		try {
-			await fs.unlink(filename); // 로컬 파일 제거
-			console.log(`Cleanup Success: Removed local file ${filename}`);
-		} catch (error) {
-			// 파일 제거 실패 시 (예: 파일이 존재하지 않거나 권한 문제)
-			console.error(`Cleanup Error: Failed to remove local file ${filename}`, error);
-		}
     } catch (err) {
         console.error('Capture Fail :', err.message);
     } finally {
@@ -289,14 +287,6 @@ const capture_fearless = async () => {
 			console.log(`Uploaded to R2: ${imageUrl}`);
 
 			await sendToDiscord("F", filename, imageUrl);
-
-			try {
-			    await fs.unlink(filename); // 로컬 파일 제거
-			    console.log(`Cleanup Success: Removed local file ${filename}`);
-			} catch (error) {
-			    // 파일 제거 실패 시 (예: 파일이 존재하지 않거나 권한 문제)
-			    console.error(`Cleanup Error: Failed to remove local file ${filename}`, error);
-			}
 		} catch (err) {
 			console.error('Capture Fail :', err.message);
 		} finally {
