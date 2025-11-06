@@ -46,9 +46,9 @@ client.on('interactionCreate', async (interaction) => {
 
       const searchData = data[0];
       const embed = new EmbedBuilder()
-          .setColor(4321431)
+          .setColor(0x4287f5)
           .setTitle(searchData.lcg_nickname)
-          .setUrl('https://rabbitgang.vercel.app')
+          .setURL('https://rabbitgang.vercel.app')
           .setThumbnail(`${searchData.lcg_main_image}profileicon/${searchData.lcg_summoner_icon}`)
           .setAuthor({ name: 'TEST', url: 'https://discord.com', iconURL: 'https://cdn.discordapp.com/embed/avatars/0.png' })
           .addFields(
