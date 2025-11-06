@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 
 const supabase = require('../supabase.js');
 
@@ -35,17 +35,6 @@ client.once('ready', () => {
     });
 });
 
-// /record name:버들보들
-client.on('messageCreate', async (message) => {
-    if (message.author.bot) return;
-    if (message.content.startsWith('/record ')) {      
-      const nickname = message.content.replace('/record ', '').trim();
-      if (!nickname) return message.reply('닉네임을 입력해주세요.');
-      await message.reply(`${nickname}님의 기록을 불러왔습니다!!`);
-    }
-});
-
-// /record 버들보들
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
     if (interaction.commandName === 'record') {
