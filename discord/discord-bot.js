@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 
-const supabase = require('./supabase.js');
+const supabase = require('../supabase.js');
 
 const getMatchSearchData = async(target) => {
 	const { data, error } = await supabase
