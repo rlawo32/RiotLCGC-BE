@@ -48,7 +48,6 @@ client.on('interactionCreate', async (interaction) => {
       const embed = new EmbedBuilder()
           .setColor(4321431)
           .setTitle(searchData.lcg_nickname)
-          .setDescription('')
           .setUrl('https://rabbitgang.vercel.app')
           .setThumbnail(`${searchData.lcg_main_image}profileicon/${searchData.lcg_summoner_icon}`)
           .setAuthor({ name: 'TEST', url: 'https://discord.com', iconURL: 'https://cdn.discordapp.com/embed/avatars/0.png' })
@@ -58,7 +57,6 @@ client.on('interactionCreate', async (interaction) => {
             { name: 'MVP 횟수', value: `\`${searchData.lcg_count_mvp}\` (**${searchData.rankMvp}위**)`, inline: true },
             { name: 'ACE 횟수', value: `\`${searchData.lcg_count_ace}\` (**${searchData.rankAce}위**)`, inline: true },
           )
-          .setFooter({ text: '' })
           .setTimestamp();
         
       await interaction.reply({ embeds: [embed] });
