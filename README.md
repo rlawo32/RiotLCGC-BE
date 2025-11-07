@@ -28,6 +28,7 @@ LCG 프로젝트 중 LCGC-BE는 커스텀 게임 결과를 이미지로 캡쳐�
 
 + Oracle Cloud에 NodeJS Express 서버 구동(PM2) ❌ <br/>
 + Render 사이트에서 배포 진행(구동 서버 이동 및 통신 테스트) ✅ <br/>
++ Render 15min sleep 정책으로 인해 Uptimerobot 연결(지속 GET 요청) ✅ <br/>
 + Puppeteer Chrome 브라우지 이슈 해결 ✅ <br/>
 + SUPABASE 통신 및 데이터 추출 ✅ <br/>
 + EJS 구성 및 Puppeteer 렌더링, 페이지 캡쳐 설정 ✅ <br/>
@@ -60,3 +61,4 @@ LCG 프로젝트 중 LCGC-BE는 커스텀 게임 결과를 이미지로 캡쳐�
 + DISCORD - [DISCORD WebHook](https://support.discord.com/hc/ko/articles/228383668-%EC%9B%B9%ED%9B%85%EC%9D%84-%EC%86%8C%EA%B0%9C%ED%95%A9%EB%8B%88%EB%8B%A4)
 + SUPABASE - [SUPABASE Docs](https://supabase.com/docs/reference/javascript/introduction)
 + RENDER - [Render Deploy](https://render.com)
++ UPTIMEROBOT - [Uptimerobot Monitoring](https://uptimerobot.com/)
