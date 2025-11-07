@@ -16,6 +16,19 @@ const getMatchSearchData = async(target) => {
 	return data; 
 };
 
+// Ranking 출력
+const convertMvpRank = (target) => {
+	let result = '';
+	if(target.includes('M')) {
+		result = 'MVP';
+	} else if(target.includes('A')) {
+		result = 'ACE';
+	} else {
+		result = target.substring(1) + 'th';
+	}
+	return result;
+};
+
 const client = new Client({
     intents: [
       GatewayIntentBits.Guilds, 
@@ -53,14 +66,18 @@ client.on('interactionCreate', async (interaction) => {
 	  const mostJson = searchData.most_champions;
 	  let mostData = '';
 	  for(let i=0; i<mostJson.length; i++) {
-		mostData += `\`\`\`scss\n**\`${mostJson[i].champion}\`** (플레이:${mostJson[i].play_count}회, 승률:${mostJson[i].win_rate}%, KDA:${mostJson[i].kda_rate})\`\`\``;
+		mostData += `\`\`\`scss\n**${mostJson[i].champion}** (플레이:${mostJson[i].play_count}회, 승률:${mostJson[i].win_rate}%, KDA:${mostJson[i].kda_rate})\`\`\``;
 	  }
 		
 	  // 최근전적 출력
 	  const matchJson = searchData.recent_matchs;
 	  let matchData = '';
 	  for(let i=0; i<matchJson.length; i++) {
-		matchData += `\`\`\`scss\n[${matchJson[i].win === 'Y' ? '승리' : '패배'}] **\`${matchJson[i].champion}\`**(${matchJson[i].mvp_rank}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold} | Vision ${matchJson[i].vision_ward}\`\`\``;
+		if(matchJson[i].win === 'Y') {
+			matchData += `\`\`\`ini\n[승리] **${matchJson[i].champion}**(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${matchJson[i].vision_ward}\`\`\``;
+		} else {
+			matchData += `\`\`\`scss\n[패배] **${matchJson[i].champion}**(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${matchJson[i].vision_ward}\`\`\``;
+		}
 	  }
 		
       const embed = new EmbedBuilder()
