@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 
 const supabase = require('../supabase.js');
+const champion = require('./discord-champion.js');
 
 const getMatchSearchData = async(target) => {
 	const { data, error } = await supabase
@@ -66,7 +67,7 @@ client.on('interactionCreate', async (interaction) => {
 	  const mostJson = searchData.most_champions;
 	  let mostData = '';
 	  for(let i=0; i<mostJson.length; i++) {
-		mostData += `\`\`\`scss\n${mostJson[i].champion} (플레이:${mostJson[i].play_count}회, 승률:${mostJson[i].win_rate}%, KDA:${mostJson[i].kda_rate})\`\`\``;
+		mostData += `\`\`\`scss\n${champion[matchJson[i].champion]} (플레이:${mostJson[i].play_count}회, 승률:${mostJson[i].win_rate}%, KDA:${mostJson[i].kda_rate})\`\`\``;
 	  }
 		
 	  // 최근전적 출력
@@ -74,9 +75,9 @@ client.on('interactionCreate', async (interaction) => {
 	  let matchData = '';
 	  for(let i=0; i<matchJson.length; i++) {
 		if(matchJson[i].win === 'Y') {
-			matchData += `\`\`\`ini\n[승리] ${matchJson[i].champion}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${matchJson[i].vision_ward}\`\`\``;
+			matchData += `\`\`\`ini\n[승리] ${champion[matchJson[i].champion]}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${matchJson[i].vision_ward}\`\`\``;
 		} else {
-			matchData += `\`\`\`scss\n[패배] ${matchJson[i].champion}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${matchJson[i].vision_ward}\`\`\``;
+			matchData += `\`\`\`scss\n[패배] ${champion[matchJson[i].champion]}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${matchJson[i].vision_ward}\`\`\``;
 		}
 	  }
 		
