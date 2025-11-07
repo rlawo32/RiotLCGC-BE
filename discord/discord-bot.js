@@ -93,7 +93,7 @@ client.on('interactionCreate', async (interaction) => {
             { name: 'ACE 횟수', value: `\`${searchData.lcg_count_ace}회\` (**${searchData.rankace}위**)`, inline: true },
 			{ name: '모스트 챔피언', value:mostData, inline: false },
 			{ name: streakMsg, value:matchData, inline: false },
-			{ name: '--------------------------------------------------------------------------------', value:`last update : ${searchData.lcg_update_data}`, inline: false }
+			{ name: '--------------------------------------------------------------', value:`last update : ${searchData.lcg_update_data}`, inline: false }
           )
           .setTimestamp();
         
