@@ -66,7 +66,7 @@ client.on('interactionCreate', async (interaction) => {
 	  const mostJson = searchData.most_champions;
 	  let mostData = '';
 	  for(let i=0; i<mostJson.length; i++) {
-		mostData += `\`\`\`scss\n**${mostJson[i].champion}** (플레이:${mostJson[i].play_count}회, 승률:${mostJson[i].win_rate}%, KDA:${mostJson[i].kda_rate})\`\`\``;
+		mostData += `\`\`\`scss\n${mostJson[i].champion} (플레이:${mostJson[i].play_count}회, 승률:${mostJson[i].win_rate}%, KDA:${mostJson[i].kda_rate})\`\`\``;
 	  }
 		
 	  // 최근전적 출력
@@ -74,9 +74,9 @@ client.on('interactionCreate', async (interaction) => {
 	  let matchData = '';
 	  for(let i=0; i<matchJson.length; i++) {
 		if(matchJson[i].win === 'Y') {
-			matchData += `\`\`\`ini\n[승리] **${matchJson[i].champion}**(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${matchJson[i].vision_ward}\`\`\``;
+			matchData += `\`\`\`ini\n[승리] ${matchJson[i].champion}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${matchJson[i].vision_ward}\`\`\``;
 		} else {
-			matchData += `\`\`\`scss\n[패배] **${matchJson[i].champion}**(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${matchJson[i].vision_ward}\`\`\``;
+			matchData += `\`\`\`scss\n[패배] ${matchJson[i].champion}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${matchJson[i].vision_ward}\`\`\``;
 		}
 	  }
 		
@@ -89,7 +89,7 @@ client.on('interactionCreate', async (interaction) => {
           .addFields(
             { name: '개인랭크', value: `**\`${searchData.lcg_present_tier} ${searchData.lcg_present_division}\`**`, inline: false },
             { name: '게임 횟수', value: `\`${searchData.lcg_count_play}회\``, inline: true },
-            { name: 'MVP 횟수', value: `\`${searchData.lcg_count_mvp}회\` (**${searchData.rankavp}위**)`, inline: true },
+            { name: 'MVP 횟수', value: `\`${searchData.lcg_count_mvp}회\` (**${searchData.rankmvp}위**)`, inline: true },
             { name: 'ACE 횟수', value: `\`${searchData.lcg_count_ace}회\` (**${searchData.rankace}위**)`, inline: true },
 			{ name: '모스트 챔피언', value:mostData, inline: false },
 			{ name: streakMsg, value:matchData, inline: false },
