@@ -53,22 +53,21 @@ client.on('interactionCreate', async (interaction) => {
 	  const mostJson = searchData.most_champions;
 	  let mostData = '';
 	  for(let i=0; i<mostJson.length; i++) {
-		mostData += `\`\`\`scss\\n**\`${mostJson[i].champion}\`** (플레이:${mostJson[i].play_count}회, 승률:${mostJson[i].win_rate}%, KDA:${mostJson[i].kda_rate})\`\`\``;
+		mostData += `\`\`\`scss\n**\`${mostJson[i].champion}\`** (플레이:${mostJson[i].play_count}회, 승률:${mostJson[i].win_rate}%, KDA:${mostJson[i].kda_rate})\`\`\``;
 	  }
 		
 	  // 최근전적 출력
 	  const matchJson = searchData.recent_matchs;
 	  let matchData = '';
 	  for(let i=0; i<matchJson.length; i++) {
-		matchData += `\`\`\`scss\\n[${matchJson[i].win === 'Y' ? '승리' : '패배'}] **\`${matchJson[i].champion}\`**(${matchJson[i].mvp_rank}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold} | Vision ${matchJson[i].vision_ward}\`\`\``;
+		matchData += `\`\`\`scss\n[${matchJson[i].win === 'Y' ? '승리' : '패배'}] **\`${matchJson[i].champion}\`**(${matchJson[i].mvp_rank}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold} | Vision ${matchJson[i].vision_ward}\`\`\``;
 	  }
 		
       const embed = new EmbedBuilder()
           .setColor(0x4287f5)
           .setTitle(searchData.lcg_nickname)
-		  .setDescription(`${searchData.lcg_main_image}profileicon/${searchData.lcg_summoner_icon}`)
           .setURL('https://rabbitgang.vercel.app')
-          .setThumbnail(`${searchData.lcg_main_image}profileicon/${searchData.lcg_summoner_icon}`)
+          .setThumbnail(`${searchData.lcg_main_image}profileicon/${searchData.lcg_summoner_icon}.png`)
           .setAuthor({ name: 'TEST', url: 'https://discord.com', iconURL: 'https://cdn.discordapp.com/embed/avatars/0.png' })
           .addFields(
             { name: '개인랭크', value: `**\`${searchData.lcg_present_tier} ${searchData.lcg_present_division}\`**`, inline: false },
