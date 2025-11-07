@@ -59,7 +59,7 @@ client.on('interactionCreate', async (interaction) => {
 	  // 최근전적 출력
 	  const matchJson = searchData.recent_matchs;
 	  let matchData = ``;
-	  for(let i=0; i<matchJson.length; i++) {{
+	  for(let i=0; i<matchJson.length; i++) {
 		matchData += `\`\`\`scss\\n[${matchJson[i].win === 'Y' ? '승리' : '패배'}] **\`${matchJson[i].champion}\`**(${matchJson[i].mvp_rank}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold} | Vision ${matchJson[i].vision_ward}\`\`\``;
 	  }
 		
