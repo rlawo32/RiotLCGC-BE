@@ -21,14 +21,22 @@ const getMatchSearchData = async(target) => {
 const convertMvpRank = (target) => {
 	let result = '';
 	if(target.includes('M')) {
-		result = 'MVP';
+		result = '\u001b[1;33mMVP\u001b[0m';
 	} else if(target.includes('A')) {
-		result = 'ACE';
+		result = '\u001b[1;35mAce\u001b[0m';
 	} else {
 		result = target.substring(1) + 'th';
 	}
 	return result;
 };
+
+// 텍스트 강조
+const highlightText = (target) => {
+  if(target > 3) {
+    target = `\u001b[1;36m${target}\u001b[0m`;
+  } 
+  return target;
+}
 
 const client = new Client({
     intents: [
@@ -59,44 +67,73 @@ client.on('interactionCreate', async (interaction) => {
       if (!data || data.length === 0) return interaction.reply('플레이어 정보가 존재하지 않습니다.');
 
       const searchData = data[0];
-	  // 연승/연패 출력
-	  const streakCnt = Math.abs(searchData.lcg_winning_streak);
-	  const streakMsg = searchData.lcg_winning_streak > 1 ? `최근전적- \`${streakCnt}연승중\`` : searchData.lcg_winning_streak < -1 ? `최근전적- \`${streakCnt}연패중\`` : '최근전적';
+	    // 연승/연패 출력
+	    const streakCnt = Math.abs(searchData.lcg_winning_streak);
+	    const streakMsg = searchData.lcg_winning_streak > 1 ? `최근전적- \`${streakCnt}연승중\`` : searchData.lcg_winning_streak < -1 ? `최근전적- \`${streakCnt}연패중\`` : '최근전적';
 
-	  // 모스트 챔피언 출력
-	  const mostJson = searchData.most_champions;
-	  let mostData = '';
-	  for(let i=0; i<mostJson.length; i++) {
-		mostData += `\`\`\`scss\n${champion[matchJson[i].champion]} (플레이:${mostJson[i].play_count}회, 승률:${mostJson[i].win_rate}%, KDA:${mostJson[i].kda_rate})\`\`\``;
-	  }
+      // 컬러 템플릿
+      const TEXT_RESET = '\u001b[0m';
+      const TEXT_BOLD = '\u001b[1m';
+      const TEXT_BOLD_BLUE = '\u001b[1;34m';
+      const TEXT_BOLD_RED = '\u001b[1;31m';
+      const TEXT_BOLD_GREEN = '\u001b[1;32m';
+      const TEXT_BOLD_PURPLE = '\u001b[1;35m';
+      const TEXT_BOLD_SKY = '\u001b[1;36m';
+      const TEXT_SKY = '\u001b[36m';
+      const TEXT_YELLOW = '\u001b[33m';
+
+	    // 모스트 챔피언 출력
+	    const mostJson = searchData.most_champions;
+	    let mostData = '';
+	    for(let i=0; i<mostJson.length; i++) {
+		    mostData += `\`\`\`ansi\n${TEXT_BOLD_GREEN}${i+1}.${TEXT_RESET}${TEXT_BOLD} ${champion[mostJson[i].champion]}${TEXT_RESET}${TEXT_BOLD_GREEN}-${TEXT_RESET}플레이:${TEXT_SKY}${mostJson[i].play_count}${TEXT_RESET}회${TEXT_BOLD_GREEN}|${TEXT_RESET}승률:${TEXT_SKY}${mostJson[i].win_rate}${TEXT_RESET}%${TEXT_BOLD_GREEN}|${TEXT_RESET}KDA:${TEXT_SKY}${mostJson[i].kda_rate}${TEXT_RESET}\`\`\``;
+	    }
 		
-	  // 최근전적 출력
-	  const matchJson = searchData.recent_matchs;
-	  let matchData = '';
-	  for(let i=0; i<matchJson.length; i++) {
-		if(matchJson[i].win === 'Y') {
-			matchData += `\`\`\`ini\n[승리] ${champion[matchJson[i].champion]}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${matchJson[i].vision_ward}\`\`\``;
-		} else {
-			matchData += `\`\`\`scss\n[패배] ${champion[matchJson[i].champion]}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist} (${matchJson[i].kda_rate})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${matchJson[i].vision_ward}\`\`\``;
-		}
-	  }
+	    // 최근전적 출력
+	    const matchJson = searchData.recent_matchs;
+	    let matchData1 = '';
+      let matchData2 = '';
+      if(matchJson.length > 5) {
+        for(let i=0; i<2; i++) {
+          const start = i * 5;
+          const end = Math.min(start + 5, matchJson.length);
+          for(let j=start; j<end; j++) {
+            if(matchJson[j].win === 'Y') {
+              if(i === 0) matchData1 += `\`\`\`ansi\n${TEXT_BOLD_BLUE}[승리]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[j].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[j].mvp_rank)}) | KDA ${matchJson[j].kill}/${matchJson[j].death}/${matchJson[j].assist}(${highlightText(matchJson[j].kda_rate)})\nCS ${matchJson[j].cs} | Gold ${matchJson[j].gold.toLocaleString()} | Vision ${highlightText(matchJson[j].vision_ward)}개\`\`\``;
+              else matchData2 += `\`\`\`ansi\n${TEXT_BOLD_BLUE}[승리]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[j].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[j].mvp_rank)}) | KDA ${matchJson[j].kill}/${matchJson[j].death}/${matchJson[j].assist}(${highlightText(matchJson[j].kda_rate)})\nCS ${matchJson[j].cs} | Gold ${matchJson[j].gold.toLocaleString()} | Vision ${highlightText(matchJson[j].vision_ward)}개\`\`\``;
+            } else {
+              if(i === 0) matchData1 += `\`\`\`ansi\n${TEXT_BOLD_RED}[패배]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[j].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[j].mvp_rank)}) | KDA ${matchJson[j].kill}/${matchJson[j].death}/${matchJson[j].assist}(${highlightText(matchJson[j].kda_rate)})\nCS ${matchJson[j].cs} | Gold ${matchJson[j].gold.toLocaleString()} | Vision ${highlightText(matchJson[j].vision_ward)}개\`\`\``;
+              else matchData2 += `\`\`\`ansi\n${TEXT_BOLD_RED}[패배]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[j].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[j].mvp_rank)}) | KDA ${matchJson[j].kill}/${matchJson[j].death}/${matchJson[j].assist}(${highlightText(matchJson[j].kda_rate)})\nCS ${matchJson[j].cs} | Gold ${matchJson[j].gold.toLocaleString()} | Vision ${highlightText(matchJson[j].vision_ward)}개\`\`\``;
+            }
+          }
+        }
+      } else {
+        for(let i=0; i<matchJson.length; i++) {
+          if(matchJson[i].win === 'Y') {
+            matchData1 += `\`\`\`ansi\n${TEXT_BOLD_BLUE}[승리]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[i].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist}(${highlightText(matchJson[i].kda_rate)})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${highlightText(matchJson[i].vision_ward)}개\`\`\``;
+          } else {
+            matchData1 += `\`\`\`ansi\n${TEXT_BOLD_RED}[패배]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[i].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist}(${highlightText(matchJson[i].kda_rate)})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${highlightText(matchJson[i].vision_ward)}개\`\`\``;
+          }
+        }
+      }
 		
       const embed = new EmbedBuilder()
-          .setColor(0x4287f5)
-          .setTitle(searchData.lcg_nickname)
-          .setURL('https://rabbitgang.vercel.app')
-          .setThumbnail(`${searchData.lcg_main_image}profileicon/${searchData.lcg_summoner_icon}.png`)
-          .setAuthor({ name: 'TEST', url: 'https://discord.com', iconURL: 'https://cdn.discordapp.com/embed/avatars/0.png' })
-          .addFields(
-            { name: '개인랭크', value: `**\`${searchData.lcg_present_tier} ${searchData.lcg_present_division}\`**`, inline: false },
-            { name: '게임 횟수', value: `\`${searchData.lcg_count_play}회\``, inline: true },
-            { name: 'MVP 횟수', value: `\`${searchData.lcg_count_mvp}회\` (**${searchData.rankmvp}위**)`, inline: true },
-            { name: 'ACE 횟수', value: `\`${searchData.lcg_count_ace}회\` (**${searchData.rankace}위**)`, inline: true },
-			{ name: '모스트 챔피언', value:mostData, inline: false },
-			{ name: streakMsg, value:matchData, inline: false },
-			{ name: '--------------------------------------------------------------', value:`last update : ${searchData.lcg_update_data}`, inline: false }
-          )
-          .setTimestamp();
+        .setColor(0x4287f5)
+        .setTitle(searchData.lcg_nickname)
+        .setURL(`https://www.op.gg/summoners/kr/${searchData.lcg_nickname.split('#')[0]}-${searchData.lcg_nickname.split('#')[1]}`)
+        .setThumbnail(`${searchData.lcg_main_image}profileicon/${searchData.lcg_summoner_icon}.png`)
+        .setAuthor({ name: '토끼파 내전 전적', url: 'https://rabbitgang.vercel.app', iconURL: 'https://pub-2e725a3fe396499cb0d0d2085e11509e.r2.dev/public/rabbitgang.png' })
+        .addFields(
+          { name: '개인랭크', value: `**${searchData.lcg_present_tier} ${searchData.lcg_present_division}**`, inline: false },
+          { name: '게임 횟수', value: `${searchData.lcg_count_play}회`, inline: true },
+          { name: 'MVP 횟수', value: `${searchData.lcg_count_mvp}회 (**${searchData.rankmvp}위**)`, inline: true },
+          { name: 'ACE 횟수', value: `${searchData.lcg_count_ace}회 (**${searchData.rankace}위**)`, inline: true },
+          { name: '모스트 챔피언', value:mostData, inline: false },
+          { name: streakMsg, value:matchData1, inline: false },
+          ...(matchJson.length > 5 ? [{ name: '\u200b', value: matchData2, inline: false }] : []),
+          { name: '\u200b', value:`\`\`\`ansi\n${TEXT_BOLD_GREEN}last update${TEXT_RESET} : ${TEXT_BOLD_SKY}${searchData.lcg_update_data}${TEXT_RESET}\`\`\``, inline: false }
+        )
+        .setTimestamp();
         
       await interaction.reply({ embeds: [embed] });
     }
