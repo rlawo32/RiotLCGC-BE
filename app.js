@@ -10,8 +10,8 @@ const port = 8080;
 const { uploadToR2 } = require('./capture/r2-upload.js');
 const { sendToDiscord } = require('./discord/discord-send.js');
 const { captureToView } = require('./capture/view-capture.js');
-// const client = require('./discord/discord-bot.js');
-// client.login(process.env.DISCORD_BOT_TOKEN);
+const client = require('./discord/discord-bot.js');
+client.login(process.env.DISCORD_BOT_TOKEN);
 
 const getLogData = async() => {
 	const { data, error } = await supabase
