@@ -31,10 +31,16 @@ const convertMvpRank = (target) => {
 };
 
 // 텍스트 강조
-const highlightText = (target) => {
-  if(target > 3) {
-    target = `\u001b[1;36m${target}\u001b[0m`;
-  } 
+const highlightText = (type, target) => {
+  if(type === 'V') return target;
+  if(type === 'W') return target >= 50 ? `\u001b[1;36m${target}\u001b[0m` : target;
+  if(target >= 100) {
+    target = `\u001b[1;33mPerfect\u001b[0m`;
+  } else if(target > 3) {
+    target = `\u001b[1;36m${target.toFixed(2)}\u001b[0m`;
+  } else {
+    target = target.toFixed(2);
+  }
   return target;
 }
 
@@ -86,7 +92,7 @@ client.on('interactionCreate', async (interaction) => {
 	    const mostJson = searchData.most_champions;
 	    let mostData = '';
 	    for(let i=0; i<mostJson.length; i++) {
-		    mostData += `\`\`\`ansi\n${TEXT_BOLD_GREEN}${i+1}.${TEXT_RESET}${TEXT_BOLD} ${champion[mostJson[i].champion]}${TEXT_RESET}${TEXT_BOLD_GREEN}-${TEXT_RESET}플레이:${TEXT_SKY}${mostJson[i].play_count}${TEXT_RESET}회${TEXT_BOLD_GREEN}|${TEXT_RESET}승률:${TEXT_SKY}${mostJson[i].win_rate}${TEXT_RESET}%${TEXT_BOLD_GREEN}|${TEXT_RESET}KDA:${TEXT_SKY}${mostJson[i].kda_rate}${TEXT_RESET}\`\`\``;
+		    mostData += `\`\`\`ansi\n${TEXT_BOLD_GREEN}${i+1}.${TEXT_RESET}${TEXT_BOLD} ${champion[mostJson[i].champion]}${TEXT_RESET}${TEXT_BOLD_GREEN}-${TEXT_RESET}플레이:${TEXT_BOLD_SKY}${mostJson[i].play_count}${TEXT_RESET}회${TEXT_BOLD_GREEN}|${TEXT_RESET}승률:${highlightText('W', mostJson[i].win_rate)}%${TEXT_BOLD_GREEN}|${TEXT_RESET}KDA:${highlightText('K', mostJson[i].kda_rate)}\`\`\``;
 	    }
 		
 	    // 최근전적 출력
@@ -99,20 +105,20 @@ client.on('interactionCreate', async (interaction) => {
           const end = Math.min(start + 5, matchJson.length);
           for(let j=start; j<end; j++) {
             if(matchJson[j].win === 'Y') {
-              if(i === 0) matchData1 += `\`\`\`ansi\n${TEXT_BOLD_BLUE}[승리]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[j].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[j].mvp_rank)}) | KDA ${matchJson[j].kill}/${matchJson[j].death}/${matchJson[j].assist}(${highlightText(matchJson[j].kda_rate)})\nCS ${matchJson[j].cs} | Gold ${matchJson[j].gold.toLocaleString()} | Vision ${highlightText(matchJson[j].vision_ward)}개\`\`\``;
-              else matchData2 += `\`\`\`ansi\n${TEXT_BOLD_BLUE}[승리]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[j].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[j].mvp_rank)}) | KDA ${matchJson[j].kill}/${matchJson[j].death}/${matchJson[j].assist}(${highlightText(matchJson[j].kda_rate)})\nCS ${matchJson[j].cs} | Gold ${matchJson[j].gold.toLocaleString()} | Vision ${highlightText(matchJson[j].vision_ward)}개\`\`\``;
+              if(i === 0) matchData1 += `\`\`\`ansi\n${TEXT_BOLD_BLUE}[승리]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[j].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[j].mvp_rank)}) | KDA ${matchJson[j].kill}/${matchJson[j].death}/${matchJson[j].assist}(${highlightText('K', matchJson[j].kda_rate)})\nCS ${matchJson[j].cs} | Gold ${matchJson[j].gold.toLocaleString()} | Vision ${highlightText('V', matchJson[j].vision_ward)}개\`\`\``;
+              else matchData2 += `\`\`\`ansi\n${TEXT_BOLD_BLUE}[승리]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[j].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[j].mvp_rank)}) | KDA ${matchJson[j].kill}/${matchJson[j].death}/${matchJson[j].assist}(${highlightText('K', matchJson[j].kda_rate)})\nCS ${matchJson[j].cs} | Gold ${matchJson[j].gold.toLocaleString()} | Vision ${highlightText('V', matchJson[j].vision_ward)}개\`\`\``;
             } else {
-              if(i === 0) matchData1 += `\`\`\`ansi\n${TEXT_BOLD_RED}[패배]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[j].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[j].mvp_rank)}) | KDA ${matchJson[j].kill}/${matchJson[j].death}/${matchJson[j].assist}(${highlightText(matchJson[j].kda_rate)})\nCS ${matchJson[j].cs} | Gold ${matchJson[j].gold.toLocaleString()} | Vision ${highlightText(matchJson[j].vision_ward)}개\`\`\``;
-              else matchData2 += `\`\`\`ansi\n${TEXT_BOLD_RED}[패배]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[j].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[j].mvp_rank)}) | KDA ${matchJson[j].kill}/${matchJson[j].death}/${matchJson[j].assist}(${highlightText(matchJson[j].kda_rate)})\nCS ${matchJson[j].cs} | Gold ${matchJson[j].gold.toLocaleString()} | Vision ${highlightText(matchJson[j].vision_ward)}개\`\`\``;
+              if(i === 0) matchData1 += `\`\`\`ansi\n${TEXT_BOLD_RED}[패배]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[j].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[j].mvp_rank)}) | KDA ${matchJson[j].kill}/${matchJson[j].death}/${matchJson[j].assist}(${highlightText('K', matchJson[j].kda_rate)})\nCS ${matchJson[j].cs} | Gold ${matchJson[j].gold.toLocaleString()} | Vision ${highlightText('V', matchJson[j].vision_ward)}개\`\`\``;
+              else matchData2 += `\`\`\`ansi\n${TEXT_BOLD_RED}[패배]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[j].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[j].mvp_rank)}) | KDA ${matchJson[j].kill}/${matchJson[j].death}/${matchJson[j].assist}(${highlightText('K', matchJson[j].kda_rate)})\nCS ${matchJson[j].cs} | Gold ${matchJson[j].gold.toLocaleString()} | Vision ${highlightText('V', matchJson[j].vision_ward)}개\`\`\``;
             }
           }
         }
       } else {
         for(let i=0; i<matchJson.length; i++) {
           if(matchJson[i].win === 'Y') {
-            matchData1 += `\`\`\`ansi\n${TEXT_BOLD_BLUE}[승리]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[i].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist}(${highlightText(matchJson[i].kda_rate)})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${highlightText(matchJson[i].vision_ward)}개\`\`\``;
+            matchData1 += `\`\`\`ansi\n${TEXT_BOLD_BLUE}[승리]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[i].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist}(${highlightText('K', matchJson[i].kda_rate)})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${highlightText('V', matchJson[i].vision_ward)}개\`\`\``;
           } else {
-            matchData1 += `\`\`\`ansi\n${TEXT_BOLD_RED}[패배]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[i].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist}(${highlightText(matchJson[i].kda_rate)})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${highlightText(matchJson[i].vision_ward)}개\`\`\``;
+            matchData1 += `\`\`\`ansi\n${TEXT_BOLD_RED}[패배]${TEXT_RESET} ${TEXT_BOLD}${champion[matchJson[i].champion]}${TEXT_RESET}(${convertMvpRank(matchJson[i].mvp_rank)}) | KDA ${matchJson[i].kill}/${matchJson[i].death}/${matchJson[i].assist}(${highlightText('K', matchJson[i].kda_rate)})\nCS ${matchJson[i].cs} | Gold ${matchJson[i].gold.toLocaleString()} | Vision ${highlightText('V', matchJson[i].vision_ward)}개\`\`\``;
           }
         }
       }
@@ -125,13 +131,13 @@ client.on('interactionCreate', async (interaction) => {
         .setAuthor({ name: '토끼파 내전 전적', url: 'https://rabbitgang.vercel.app', iconURL: 'https://pub-2e725a3fe396499cb0d0d2085e11509e.r2.dev/public/rabbitgang.png' })
         .addFields(
           { name: '개인랭크', value: `**${searchData.lcg_present_tier} ${searchData.lcg_present_division}**`, inline: false },
-          { name: '게임 횟수', value: `${searchData.lcg_count_play}회`, inline: true },
+          { name: '게임 횟수', value: `${searchData.lcg_count_play}회 (${searchData.lcg_count_victory}W/${searchData.lcg_count_defeat}L/${(searchData.lcg_count_victory/searchData.lcg_count_play*100).toFixed(1)}%)`, inline: true },
           { name: 'MVP 횟수', value: `${searchData.lcg_count_mvp}회 (**${searchData.rankmvp}위**)`, inline: true },
           { name: 'ACE 횟수', value: `${searchData.lcg_count_ace}회 (**${searchData.rankace}위**)`, inline: true },
-          { name: '모스트 챔피언', value:mostData, inline: false },
-          { name: streakMsg, value:matchData1, inline: false },
+          { name: '모스트 챔피언', value: mostData, inline: false },
+          { name: streakMsg, value: matchData1, inline: false },
           ...(matchJson.length > 5 ? [{ name: '\u200b', value: matchData2, inline: false }] : []),
-          { name: '\u200b', value:`\`\`\`ansi\n${TEXT_BOLD_GREEN}last update${TEXT_RESET} : ${TEXT_BOLD_SKY}${searchData.lcg_update_data}${TEXT_RESET}\`\`\``, inline: false }
+          { name: '\u200b', value: `last update : ${searchData.lcg_update_data}`, inline: false }
         )
         .setTimestamp();
         
