@@ -69,9 +69,7 @@ const getMainData = async(gameId) => {
 
 const getFearlessData = async(gameDay) => {
 	const { data, error } = await supabase
-		.from("lcg_match_main")
-		.select("row_num, lcg_game_set, lcg_champion_name, lcg_line_order")
-		.like("lcg_game_set", `%${gameDay}%`);
+		.rpc("match_gameset", {game_day: gameDay});
 	if (error) {
 		console.error('Error fetching data:', error);
 	} else {
@@ -85,6 +83,7 @@ const getGameExists = async(gameDay) => {
 		.from("lcg_match_info")
 		.select("lcg_game_id, lcg_game_set")
 		.like("lcg_game_set", `%${gameDay}%`)
+		.order("lcg_game_set", { ascending: false })
 		.limit(1);
 	if (error) {
 		console.error('Error fetching data:', error);
@@ -229,7 +228,7 @@ const realtime_test = () => {
                 console.log(payload);
 				await captureToView('H', 0);
 				const gameDay = calcGameDay();
-				//const gameDay = "25/10/02"; // TEST
+				// const gameDay = "25/10/02"; // TEST
 				const mainData = await getGameExists(gameDay);
 				console.log(gameDay);
 				console.log(mainData);
@@ -288,7 +287,7 @@ const realtime_real = () => {
                 console.log(payload);
 				await captureToView('H', 0);
 				const gameDay = calcGameDay();
-				//const gameDay = "25/10/02"; // TEST
+				// const gameDay = "25/10/02"; // TEST
 				const mainData = await getGameExists(gameDay);
 				console.log(gameDay);
 				console.log(mainData);
