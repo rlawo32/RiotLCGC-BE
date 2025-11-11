@@ -67,11 +67,11 @@ const getMainData = async(gameId) => {
 	return data; 
 };
 
-const getFearlessData = async(gameSet) => {
+const getFearlessData = async(gameDay) => {
 	const { data, error } = await supabase
 		.from("lcg_match_main")
 		.select("row_num, lcg_game_set, lcg_champion_name, lcg_line_order")
-		.like("lcg_game_set", `%${gameSet}%`);
+		.like("lcg_game_set", `%${gameDay}%`);
 	if (error) {
 		console.error('Error fetching data:', error);
 	} else {
@@ -80,12 +80,11 @@ const getFearlessData = async(gameSet) => {
 	return data; 
 };
 
-const getLatestFearlessData = async(gameSet) => {
+const getGameExists = async(gameDay) => {
 	const { data, error } = await supabase
-		.from("lcg_match_main")
-		.select("lcg_game_set, lcg_champion_name, lcg_line_order")
-		.like("lcg_game_set", `%${gameSet}%`)
-		.order("lcg_game_id", { ascending: false })
+		.from("lcg_match_info")
+		.select("lcg_game_id, lcg_game_set")
+		.like("lcg_game_set", `%${gameDay}%`)
 		.limit(1);
 	if (error) {
 		console.error('Error fetching data:', error);
@@ -95,7 +94,7 @@ const getLatestFearlessData = async(gameSet) => {
 	return data; 
 };
 
-const getGameDurationMin = (duration) => {
+const calcGameDurationMin = (duration) => {
     let minute = Math.floor(duration / 60);
     const second = duration % 60;
     if(second > 30) {
@@ -104,10 +103,10 @@ const getGameDurationMin = (duration) => {
     return minute;
 }
 
-const getLatestGameSet = () => {
+const calcGameDay = () => {
     const calcDay = new Date(new Date().getTime() - 4 * 60 * 60 * 1000); // 현재 시간에서 -4시간
-	const gameSet = String(calcDay.getFullYear()).substring(2) + "/" + (calcDay.getMonth()+1) + "/" + String(calcDay.getDate()).padStart(2, "0");
-    return gameSet;
+	const gameDay = String(calcDay.getFullYear()).substring(2) + "/" + (calcDay.getMonth()+1) + "/" + String(calcDay.getDate()).padStart(2, "0");
+    return gameDay;
 }
 
 app.set('view engine', 'ejs');
@@ -147,7 +146,7 @@ app.get('/history', async (req, res) => {
 
 	const lcgGameDate = logData[0].lcg_game_date.substring(0, 10);
 	const lcgGameVer = logData[0].lcg_game_ver;
-	const lcgGameDurationMin = getGameDurationMin(mainData[0].lcg_game_duration);
+	const lcgGameDurationMin = calcGameDurationMin(mainData[0].lcg_game_duration);
 	const lcgGameDurationSec = String(mainData[0].lcg_game_duration % 60).padStart(2, '0');
 	const imageUrl = etcData[0].lcg_r2_image;
     const imageUrl1 = etcData[0].lcg_main_image;
@@ -159,13 +158,13 @@ app.get('/history', async (req, res) => {
 // 피어리스 이미지 생성
 app.get('/fearless', async (req, res) => {
 	res.set('Content-Type', 'text/html; charset=utf-8');
-	const gameSet = getLatestGameSet();
-	// const gameSet = "25/10/02"; // TEST
+	const gameDay = calcGameDay();
+	// const gameDay = "25/10/02"; // TEST
 
 	const logData = await getLogData();
 	const gameId = logData[0].lcg_game_id;
 	const etcData = await getEtcData();
-	const mainData = await getFearlessData(gameSet);
+	const mainData = await getFearlessData(gameDay);
 	mainData.sort((a, b) => a.row_num - b.row_num);
 
 	const lcgGameDate = logData[0].lcg_game_date.split("/")[0];
@@ -229,15 +228,15 @@ const realtime_test = () => {
             async (payload) => {
                 console.log(payload);
 				await captureToView('H', 0);
-				const gameSet = getLatestGameSet();
-				//const gameSet = "25/10/02"; // TEST
-				const mainData = await getLatestFearlessData(gameSet);
-				console.log(gameSet);
+				const gameDay = calcGameDay();
+				//const gameDay = "25/10/02"; // TEST
+				const mainData = await getGameExists(gameDay);
+				console.log(gameDay);
 				console.log(mainData);
 				if(mainData.length > 0) {
 					await captureToView('F', Number(mainData[0].lcg_game_set.split("_")[1]));
 				} else {
-					console.log(`${gameSet} 경기 내역이 없습니다.`);
+					console.log(`${gameDay} 경기 내역이 없습니다.`);
 				}
             }
         )
@@ -288,15 +287,15 @@ const realtime_real = () => {
             async (payload) => {
                 console.log(payload);
 				await captureToView('H', 0);
-				const gameSet = getLatestGameSet();
-				//const gameSet = "25/10/02"; // TEST
-				const mainData = await getLatestFearlessData(gameSet);
-				console.log(gameSet);
+				const gameDay = calcGameDay();
+				//const gameDay = "25/10/02"; // TEST
+				const mainData = await getGameExists(gameDay);
+				console.log(gameDay);
 				console.log(mainData);
 				if(mainData.length > 0) {
 					await captureToView('F', Number(mainData[0].lcg_game_set.split("_")[1]));
 				} else {
-					console.log(`${gameSet} 경기 내역이 없습니다.`);
+					console.log(`${gameDay} 경기 내역이 없습니다.`);
 				}
             }
 		)
