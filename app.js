@@ -105,8 +105,8 @@ const getGameDurationMin = (duration) => {
 }
 
 const getLatestGameSet = () => {
-	const calcDay = new Date(new Date().getTime() - 4 * 60 * 60 * 1000);
-	const gameSet = (calcDay.getMonth()+1) + "/" + String(calcDay.getDate()).padStart(2, "0");
+    const calcDay = new Date(new Date().getTime() - 4 * 60 * 60 * 1000); // 현재 시간에서 -4시간
+	const gameSet = String(calcDay.getFullYear()).substring(2) + "/" + (calcDay.getMonth()+1) + "/" + String(calcDay.getDate()).padStart(2, "0");
     return gameSet;
 }
 
@@ -129,7 +129,7 @@ app.listen(port, '0.0.0.0', () => {
     console.log(`LCGC-BE app listening on port ${port}`)
 })
 
-// Sleep 방지
+// Render Sleep 방지
 app.get('/ping', (req, res) => {
     console.log(`UptimeRobot ping request received`)
   	res.status(200).send('ok');
@@ -159,8 +159,8 @@ app.get('/history', async (req, res) => {
 // 피어리스 이미지 생성
 app.get('/fearless', async (req, res) => {
 	res.set('Content-Type', 'text/html; charset=utf-8');
-	// const gameSet = getLatestGameSet();
-	const gameSet = "10/02"; // TEST
+	const gameSet = getLatestGameSet();
+	// const gameSet = "25/10/02"; // TEST
 
 	const logData = await getLogData();
 	const gameId = logData[0].lcg_game_id;
@@ -229,14 +229,16 @@ const realtime_test = () => {
             async (payload) => {
                 console.log(payload);
 				await captureToView('H', 0);
-				//const gameSet = getLatestGameSet();
-				const gameSet = "10/02"; // TEST
+				const gameSet = getLatestGameSet();
+				//const gameSet = "25/10/02"; // TEST
 				const mainData = await getLatestFearlessData(gameSet);
 				console.log(gameSet);
 				console.log(mainData);
 				if(mainData.length > 0) {
 					await captureToView('F', Number(mainData[0].lcg_game_set.split("_")[1]));
-				}	
+				} else {
+					console.log(`${gameSet} 경기 내역이 없습니다.`);
+				}
             }
         )
         .on('error', (error) => {
@@ -286,14 +288,16 @@ const realtime_real = () => {
             async (payload) => {
                 console.log(payload);
 				await captureToView('H', 0);
-				//const gameSet = getLatestGameSet();
-				const gameSet = "10/02"; // TEST
+				const gameSet = getLatestGameSet();
+				//const gameSet = "25/10/02"; // TEST
 				const mainData = await getLatestFearlessData(gameSet);
 				console.log(gameSet);
 				console.log(mainData);
 				if(mainData.length > 0) {
 					await captureToView('F', Number(mainData[0].lcg_game_set.split("_")[1]));
-				}	
+				} else {
+					console.log(`${gameSet} 경기 내역이 없습니다.`);
+				}
             }
 		)
         .on('error', (error) => {
