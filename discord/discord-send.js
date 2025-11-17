@@ -30,7 +30,7 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
             form.append('content', `${date} 팀 셔플 결과\n${imageUrl}`);
             webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
         }
-        webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST; // TEST
+        // webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST; // TEST
 
         await axios.post(webhookUrl, form, {
             headers: form.getHeaders()
