@@ -20,7 +20,8 @@ const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN)
   try {
     console.log('슬래시 명령어 등록 중...');
     await rest.put(
-      Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.DISCORD_GUILD_ID), // 특정 서버만 설정
+      // Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.DISCORD_TEST_GUILD_ID), // 특정 서버만 설정
+      Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.DISCORD_REAL_GUILD_ID),
       // Routes.applicationCommands(CLIENT_ID), // 전역 설정
       { body: commands },
     );
