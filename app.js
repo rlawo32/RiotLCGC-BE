@@ -133,12 +133,40 @@ app.get('/ping', (req, res) => {
   	res.status(200).send('ok');
 });
 
+// Render Sleep 방지
+let passivityFlag = false;
+let controlGameId = "";
+app.get('/history-passivity', async (req, res) => {
+	const gameId = req.query.gameid || 0;
+
+	if(gameId !== 0) {
+		console.log(`Passivity MatchHistroy screenshot send, GameID : ${gameId}`)
+
+		passivityFlag = true;
+		controlGameId = gameId;
+
+		await captureToView('H', 0);
+
+  		res.status(200).send('Passivity screenshot send ... ok');
+	} else {
+		console.log(`Missing GameID ...`)
+
+  		res.status(400).send('Please insert gameid');
+	}
+});
+
 // 최신 전적 이미지 생성
 app.get('/history', async (req, res) => {
 	res.set('Content-Type', 'text/html; charset=utf-8');
 
 	const logData = await getLogData();
-	const gameId = logData[0].lcg_game_id;
+	let gameId;
+	if(passivityFlag) {		
+		gameId = controlGameId;
+		passivityFlag = false;
+	} else {
+		gameId = logData[0].lcg_game_id;
+	}
 	const etcData = await getEtcData();
 	const teamData = await getTeamData(gameId);
 	const mainData = await getMainData(gameId);
