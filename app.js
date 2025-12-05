@@ -127,13 +127,18 @@ app.listen(port, '0.0.0.0', () => {
     console.log(`LCGC-BE app listening on port ${port}`)
 })
 
+// Render health check
+app.get('/health', (req, res) => {
+  	res.status(200).send('ok');
+});
+
 // Render Sleep 방지
 app.get('/ping', (req, res) => {
     console.log(`UptimeRobot ping request received`)
   	res.status(200).send('ok');
 });
 
-// Render Sleep 방지
+// Discord history screenshot 수동 동작 (gameId)
 let passivityFlag = false;
 let controlGameId = "";
 app.get('/history-passivity', async (req, res) => {
