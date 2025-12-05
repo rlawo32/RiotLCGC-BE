@@ -133,8 +133,10 @@ app.get('/health', (req, res) => {
 });
 
 // Render Sleep 방지
+let uptimerobotCount = 0;
 app.get('/ping', (req, res) => {
-    console.log(`UptimeRobot ping request received`)
+	uptimerobotCount += 1;
+    console.log(`UptimeRobot ping request received (${uptimerobotCount})`)
   	res.status(200).send('ok');
 });
 
