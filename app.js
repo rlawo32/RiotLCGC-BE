@@ -134,10 +134,16 @@ app.get('/health', (req, res) => {
 
 // Render Sleep 방지
 let uptimerobotCount = 0;
-app.get('/ping', (req, res) => {
-	uptimerobotCount += 1;
-    console.log(`UptimeRobot ping request received (${uptimerobotCount})`)
+app.get('/ping1', (req, res) => {
   	res.status(200).send('ok');
+	uptimerobotCount += 1;
+    console.log(`UptimeRobot ping request received [5m]-(${uptimerobotCount})`)
+});
+
+app.get('/ping2', (req, res) => {
+  	res.status(200).send('ok');
+	uptimerobotCount += 1;
+    console.log(`UptimeRobot ping request received [8m]-(${uptimerobotCount})`)
 });
 
 // Discord history screenshot 수동 동작 (gameId)
