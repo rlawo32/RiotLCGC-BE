@@ -110,6 +110,7 @@ const calcGameDay = () => {
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
+app.use(express.json());
 
 const allowedOrigins = ['http://localhost:3001', 'http://localhost:3000', 'http://localhost:8080', 'https://rabbitgang.vercel.app'];
 app.use(cors({
@@ -238,6 +239,34 @@ app.post('/send-image', upload.single('imageFile'), async (req, res) => {
 		await sendToDiscord("S", file.originalname, imageUrl);
 
         res.status(200).json({ message: 'Image received successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// NextJS로부터 Shuffle TeamResult 수신
+app.post('/send-shuffle', async (req, res) => {
+    try {
+		const data = req.body;
+		let result = "";
+		for(let i=0; i<data.length; i++) {
+			for(let j=0; j<data[i].list.length; j++) {
+				result += data[i].list[j];
+				if(data[i].list.length-1 !== j) {
+					result += " ";
+				}
+			}
+			if(data.length-1 !== i) {
+				result += " VS ";
+			}
+		}
+
+        console.log('Result :', result);
+
+		await sendToDiscord("R", "", result);
+
+        res.status(200).json({ message: 'TeamResult received successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });

@@ -11,6 +11,7 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
         const date = `${year}-${month}-${day}`;
 
         const form = new FormData();
+        let embedData = {};
         let webhookUrl = '';
 
 /*
@@ -29,12 +30,45 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
         } else if(type === "S") {
             form.append('content', `${date} 팀 셔플 결과\n${imageUrl}`);
             webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
+            //webhookUrl = process.env.DISCORD_WEBHOOK_URL_SHUFFLE;
+        } else if(type === "R") {
+            const [left, right] = imageUrl.split(" VS ");
+            embedData = {
+                embeds: [{
+                    title: "",
+                    color: 7855479, // Embed 왼쪽 테두리 색상 (푸른색 계열)
+                    fields: [
+                        {
+                            name: "🔵 Blue Team",
+                            value: `**${left}**`,
+                            inline: true
+                        },
+                        {
+                            name: "\u200b",
+                            value: "\u200b", // 공백 문자
+                            inline: true
+                        },
+                        {
+                            name: "🔴 Red Team",
+                            value: `**${right}**`,
+                            inline: true
+                        }
+                    ],
+                    timestamp: new Date()
+                }]
+            };
+            // webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
+            webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEAMRESULT;
         }
         // webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST; // TEST
 
-        await axios.post(webhookUrl, form, {
-            headers: form.getHeaders()
-        });
+        if(type === "R") {
+            await axios.post(webhookUrl, embedData);
+        } else {
+            await axios.post(webhookUrl, form, {
+                headers: form.getHeaders()
+            });
+        }
         if(type === "H" || type === "F") {
             try {
                 await fs.unlink(originPath); // 로컬 파일 제거
