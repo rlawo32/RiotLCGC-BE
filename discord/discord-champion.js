@@ -163,6 +163,7 @@ const championJson = {
   "Yorick": "요릭",
   "Yuumi": "유미",
   "Yunara": "유나라",
+  "Zaahen": "자헨",
   "Zac": "자크",
   "Zed": "제드",
   "Zeri": "제리",
