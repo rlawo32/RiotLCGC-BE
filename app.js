@@ -320,7 +320,7 @@ const realtime_test = () => {
         .subscribe(status => {
             console.log('Realtime subscription status:', status);
             if (status === 'SUBSCRIBED' && testReconnectTimeout) {
-                clearTimeout(reconnectTtestReconnectTimeoutimeout);
+                clearTimeout(testReconnectTimeout);
                 testReconnectTimeout = null;
             }
         });
