@@ -154,7 +154,7 @@ const championJson = {
   "Vladimir": "블라디미르",
   "Volibear": "볼리베어",
   "Warwick": "워윅",
-  "Wukong": "오공",
+  "MonkeyKing": "오공",
   "Xayah": "자야",
   "Xerath": "제라스",
   "XinZhao": "신짜오",
