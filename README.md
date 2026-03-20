@@ -38,10 +38,11 @@ LCG 프로젝트 중 LCGC-BE는 커스텀 게임 결과를 이미지로 캡쳐�
 + 팀 짜기 결과 이미지 전송 기능 ✅ <br/>
 + Fearless 규칙, 게임 세트 별 챔피언 이미지 생성 후 전송 ✅ <br/>
 + Realtime 구독 오류 체크 및 이미지 전송 후 로컬 이미지 삭제 ✅ <br/>
-+ Discord BOT 연동 - Command 등록(전적 검색) 🚧 <br/>
-+ Discord BOT 연동 - Command 기능 동작 작업(통신 및 결과 출력) 🚧 <br/>
-+ Discord Embed 생성 작업 🚧 <br/>
-+ JS 코드 파일 분리 작업 🚧 <br/>
++ Discord BOT 연동 - Command 등록(전적 검색) ✅ <br/>
++ Discord BOT 연동 - Command 기능 동작 작업(통신 및 결과 출력) ✅ <br/>
++ Discord Embed 디자인, 전적 검색 결과 출력 작업 ✅ <br/>
++ JS 코드 파일 세분화 분리 작업 ✅ <br/>
++ Uptimerobot 지속 GET 요청 시간 분리, 5m/8m 2개의 요청으로 서버 유지 ✅ <br/>
 
 <br/>
 
