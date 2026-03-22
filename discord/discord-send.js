@@ -39,26 +39,26 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
                     color: 7855479, // Embed 왼쪽 테두리 색상 (푸른색 계열)
                     fields: [
                         {
-                            name: "🔵 Blue Team",
-                            value: `**${left}**`,
+                            name: "-------------------",
+                            value: "```ansi\n\u001b[1;34m🔵BlueTeam\u001b[0m\n```" + `\`\`\`ansi\n\u001b[1;37m  ${left.split(' ').join('\n  ')}\u001b[0m\`\`\``,
                             inline: true
                         },
                         {
-                            name: "\u200b",
+                            name: "-----",
                             value: "\u200b", // 공백 문자
                             inline: true
                         },
                         {
-                            name: "🔴 Red Team",
-                            value: `**${right}**`,
+                            name: "-------------------",
+                            value: "```ansi\n\u001b[1;31m 🔴RedTeam\u001b[0m\n```" + `\`\`\`ansi\n\u001b[1;37m  ${right.split(' ').join('\n  ')}\u001b[0m\`\`\``,
                             inline: true
                         }
                     ],
                     timestamp: new Date()
                 }]
             };
-            // webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
-            webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEAMRESULT;
+            webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
+            // webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEAMRESULT;
         }
         // webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST; // TEST
 
