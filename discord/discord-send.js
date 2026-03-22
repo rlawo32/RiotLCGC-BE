@@ -57,8 +57,8 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
                     timestamp: new Date()
                 }]
             };
-            webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
-            // webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEAMRESULT;
+            // webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
+            webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEAMRESULT;
         }
         // webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST; // TEST
 
