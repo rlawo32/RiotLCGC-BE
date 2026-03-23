@@ -22,7 +22,7 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
         }
 */
         if(type === "H") {
-            form.append('content', `${date} 최신 전적 업데이트!\n사이트이동 -> https://rabbitgang.vercel.app\n${imageUrl}`);
+            form.append('content', `${date} 최신 전적 업데이트!\n${imageUrl}`);
             webhookUrl = process.env.DISCORD_WEBHOOK_URL_HISTORY;
         } else if(type === "F") {
             form.append('content', `${date} 피어리스 업데이트!\n${imageUrl}`);
