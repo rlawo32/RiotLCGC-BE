@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실시간 매치 · 라인별 대시보드</title>
+<link rel="stylesheet" href="/realTimeInfo_styles.css">
+</head>
+<body>
+<div class="match_realTimeInfo">
+
+  <div class="page-head">
+    <h1>실시간 매치 · 라인별 대시보드</h1>
+    <h2><%= currentDate %> - <%= currentSet %>번째 세트</h2>
+  </div>
+
+  <div class="team-bar">
+    <div class="team-name blue"><span class="dot"></span>BLUE TEAM</div>
+    <div class="vs-label">VS</div>
+    <div class="team-name red"><span class="dot"></span>RED TEAM</div>
+  </div>
+
+  <div class="board">
+    <%
+        const blueTop = result?.find(player => player.lane === 'TOP' && player.team === 'BLUE');
+        const blueJug = result?.find(player => player.lane === 'JUG' && player.team === 'BLUE');
+        const blueMid = result?.find(player => player.lane === 'MID' && player.team === 'BLUE');
+        const blueAdc = result?.find(player => player.lane === 'ADC' && player.team === 'BLUE');
+        const blueSup = result?.find(player => player.lane === 'SUP' && player.team === 'BLUE');
+        const redTop = result?.find(player => player.lane === 'TOP' && player.team === 'RED');
+        const redJug = result?.find(player => player.lane === 'JUG' && player.team === 'RED');
+        const redMid = result?.find(player => player.lane === 'MID' && player.team === 'RED');
+        const redAdc = result?.find(player => player.lane === 'ADC' && player.team === 'RED');
+        const redSup = result?.find(player => player.lane === 'SUP' && player.team === 'RED');
+        const relativeTop = relative?.find(data => data.lcg_match_line === 'TOP');
+        const relativeJug = relative?.find(data => data.lcg_match_line === 'JUG');
+        const relativeMid = relative?.find(data => data.lcg_match_line === 'MID');
+        const relativeAdc = relative?.find(data => data.lcg_match_line === 'ADC');
+        const relativeSup = relative?.find(data => data.lcg_match_line === 'SUP');
+    %>
+
+    <!-- TOP -->
+    <div class="lane-row">
+      <div class="p-card blue" style="--champ-bg:url('https://img.rabbitgang-img.shop/centered/<%= blueTop?.lcg_champion_name %>_0.webp')">
+        <div class="p-info">
+          <div class="p-names">
+            <span class="p-name"><%= blueTop?.lcg_summoner_nickname.split('#')[0] %></span>
+            <span class="champ-name"><%= blueTop?.lcg_champion_name %></span>
+          </div>
+          <div class="p-tags">
+            <span class="wl-text"><%= blueTop?.lcg_win_count %>승 <%= blueTop?.lcg_fail_count %>패</span>
+            <span class="wl-text"><%= blueTop?.kda %> KDA</span>
+          </div>
+          <div class="wr-row">
+            <div class="wr-track">
+              <div class="wr-fill" style="width:<%= blueTop?.rate %>%"></div>
+              <span class="wr-pct"><%= blueTop?.rate %>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lane-mid">
+        <span class="lane-label">TOP</span>
+        <div class="h2h-score"><span class="b"><%= relativeTop?.lcg_win_count %></span><span class="sep">:</span><span class="r"><%= relativeTop?.lcg_fail_count %></span></div>
+        <div class="h2h-bar" title="상대전적 TOP (블루팀 기준)">
+          <div class="seg-b" style="width:<%= relativeTop?.rateBlue %>%"></div>
+          <div class="seg-r" style="width:<%= relativeTop?.rateRed %>%"></div>
+        </div>
+        <span class="h2h-note"><%= relativeTop?.lcg_win_count + relativeTop?.lcg_fail_count %>번째 매치</span>
+      </div>
+
+      <div class="p-card red" style="--champ-bg:url('https://img.rabbitgang-img.shop/centered/<%= redTop?.lcg_champion_name %>_0.webp')">
+        <div class="p-info">
+          <div class="p-names">
+            <span class="p-name"><%= redTop?.lcg_summoner_nickname.split('#')[0] %></span>
+            <span class="champ-name"><%= redTop?.lcg_champion_name %></span>
+          </div>
+          <div class="p-tags">
+            <span class="wl-text"><%= redTop?.lcg_win_count %>승 <%= redTop?.lcg_fail_count %>패</span>
+            <span class="wl-text"><%= redTop?.kda %> KDA</span>
+          </div>
+          <div class="wr-row">
+            <div class="wr-track red">
+              <div class="wr-fill red" style="width:<%= redTop?.rate %>%"></div>
+              <span class="wr-pct"><%= redTop?.rate %>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JUG -->
+    <div class="lane-row">
+      <div class="p-card blue" style="--champ-bg:url('https://img.rabbitgang-img.shop/centered/<%= blueJug?.lcg_champion_name %>_0.webp')">
+        <div class="p-info">
+          <div class="p-names">
+            <span class="p-name"><%= blueJug?.lcg_summoner_nickname.split('#')[0] %></span>
+            <span class="champ-name"><%= blueJug?.lcg_champion_name %></span>
+          </div>
+          <div class="p-tags">
+            <span class="wl-text"><%= blueJug?.lcg_win_count %>승 <%= blueJug?.lcg_fail_count %>패</span>
+            <span class="wl-text"><%= blueJug?.kda %> KDA</span>
+          </div>
+          <div class="wr-row">
+            <div class="wr-track">
+              <div class="wr-fill" style="width:<%= blueJug?.rate %>%"></div>
+              <span class="wr-pct"><%= blueJug?.rate %>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lane-mid">
+        <span class="lane-label">JUG</span>
+        <div class="h2h-score"><span class="b"><%= relativeJug?.lcg_win_count %></span><span class="sep">:</span><span class="r"><%= relativeJug?.lcg_fail_count %></span></div>
+        <div class="h2h-bar" title="상대전적 JUG (블루팀 기준)">
+          <div class="seg-b" style="width:<%= relativeJug?.rateBlue %>%"></div>
+          <div class="seg-r" style="width:<%= relativeJug?.rateRed %>%"></div>
+        </div>
+        <span class="h2h-note"><%= relativeJug?.lcg_win_count + relativeJug?.lcg_fail_count %>번째 매치</span>
+      </div>
+
+      <div class="p-card red" style="--champ-bg:url('https://img.rabbitgang-img.shop/centered/<%= redJug?.lcg_champion_name %>_0.webp')">
+        <div class="p-info">
+          <div class="p-names">
+            <span class="p-name"><%= redJug?.lcg_summoner_nickname.split('#')[0] %></span>
+            <span class="champ-name"><%= redJug?.lcg_champion_name %></span>
+          </div>
+          <div class="p-tags">
+            <span class="wl-text"><%= redJug?.lcg_win_count %>승 <%= redJug?.lcg_fail_count %>패</span>
+            <span class="wl-text"><%= redJug?.kda %> KDA</span>
+          </div>
+          <div class="wr-row">
+            <div class="wr-track red">
+              <div class="wr-fill" style="width:<%= redJug?.rate %>%"></div>
+              <span class="wr-pct"><%= redJug?.rate %>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MID -->
+    <div class="lane-row">
+      <div class="p-card blue" style="--champ-bg:url('https://img.rabbitgang-img.shop/centered/<%= blueMid?.lcg_champion_name %>_0.webp')">
+        <div class="p-info">
+          <div class="p-names">
+            <span class="p-name"><%= blueMid?.lcg_summoner_nickname.split('#')[0] %></span>
+            <span class="champ-name"><%= blueMid?.lcg_champion_name %></span>
+          </div>
+          <div class="p-tags">
+            <span class="wl-text"><%= blueMid?.lcg_win_count %>승 <%= blueMid?.lcg_fail_count %>패</span>
+            <span class="wl-text"><%= blueMid?.kda %> KDA</span>
+          </div>
+          <div class="wr-row">
+            <div class="wr-track">
+              <div class="wr-fill" style="width:<%= blueMid?.rate %>%"></div>
+              <span class="wr-pct"><%= blueMid?.rate %>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lane-mid">
+        <span class="lane-label">MID</span>
+        <div class="h2h-score"><span class="b"><%= relativeMid?.lcg_win_count %></span><span class="sep">:</span><span class="r"><%= relativeMid?.lcg_fail_count %></span></div>
+        <div class="h2h-bar" title="상대전적 MID (블루팀 기준)">
+          <div class="seg-b" style="width:<%= relativeMid?.rateBlue %>%"></div>
+          <div class="seg-r" style="width:<%= relativeMid?.rateRed %>%"></div>
+        </div>
+        <span class="h2h-note"><%= relativeMid?.lcg_win_count + relativeMid?.lcg_fail_count %>번째 매치</span>
+      </div>
+
+      <div class="p-card red" style="--champ-bg:url('https://img.rabbitgang-img.shop/centered/<%= redMid?.lcg_champion_name %>_0.webp')">
+        <div class="p-info">
+          <div class="p-names">
+            <span class="p-name"><%= redMid?.lcg_summoner_nickname.split('#')[0] %></span>
+            <span class="champ-name"><%= redMid?.lcg_champion_name %></span>
+          </div>
+          <div class="p-tags">
+            <span class="wl-text"><%= redMid?.lcg_win_count %>승 <%= redMid?.lcg_fail_count %>패</span>
+            <span class="wl-text"><%= redMid?.kda %> KDA</span>
+          </div>
+          <div class="wr-row">
+            <div class="wr-track red">
+              <div class="wr-fill" style="width:<%= redMid?.rate %>%"></div>
+              <span class="wr-pct"><%= redMid?.rate %>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADC -->
+    <div class="lane-row">
+      <div class="p-card blue" style="--champ-bg:url('https://img.rabbitgang-img.shop/centered/<%= blueAdc?.lcg_champion_name %>_0.webp')">
+        <div class="p-info">
+          <div class="p-names">
+            <span class="p-name"><%= blueAdc?.lcg_summoner_nickname.split('#')[0] %></span>
+            <span class="champ-name"><%= blueAdc?.lcg_champion_name %></span>
+          </div>
+          <div class="p-tags">
+            <span class="wl-text"><%= blueAdc?.lcg_win_count %>승 <%= blueAdc?.lcg_fail_count %>패</span>
+            <span class="wl-text"><%= blueAdc?.kda %> KDA</span>
+          </div>
+          <div class="wr-row">
+            <div class="wr-track">
+              <div class="wr-fill" style="width:<%= blueAdc?.rate %>%"></div>
+              <span class="wr-pct"><%= blueAdc?.rate %>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lane-mid">
+        <span class="lane-label">ADC</span>
+        <div class="h2h-score"><span class="b"><%= relativeAdc?.lcg_win_count %></span><span class="sep">:</span><span class="r"><%= relativeAdc?.lcg_fail_count %></span></div>
+        <div class="h2h-bar" title="상대전적 TOP (블루팀 기준)">
+          <div class="seg-b" style="width:<%= relativeAdc?.rateBlue %>%"></div>
+          <div class="seg-r" style="width:<%= relativeAdc?.rateRed %>%"></div>
+        </div>
+        <span class="h2h-note"><%= relativeAdc?.lcg_win_count + relativeAdc?.lcg_fail_count %>번째 매치</span>
+      </div>
+
+      <div class="p-card red" style="--champ-bg:url('https://img.rabbitgang-img.shop/centered/<%= redAdc?.lcg_champion_name %>_0.webp')">
+        <div class="p-info">
+          <div class="p-names">
+            <span class="p-name"><%= redAdc?.lcg_summoner_nickname.split('#')[0] %></span>
+            <span class="champ-name"><%= redAdc?.lcg_champion_name %></span>
+          </div>
+          <div class="p-tags">
+            <span class="wl-text"><%= redAdc?.lcg_win_count %>승 <%= redAdc?.lcg_fail_count %>패</span>
+            <span class="wl-text"><%= redAdc?.kda %> KDA</span>
+          </div>
+          <div class="wr-row">
+            <div class="wr-track red">
+              <div class="wr-fill" style="width:<%= redAdc?.rate %>%"></div>
+              <span class="wr-pct"><%= redAdc?.rate %>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUP -->
+    <div class="lane-row">
+      <div class="p-card blue" style="--champ-bg:url('https://img.rabbitgang-img.shop/centered/<%= blueSup?.lcg_champion_name %>_0.webp')">
+        <div class="p-info">
+          <div class="p-names">
+            <span class="p-name"><%= blueSup?.lcg_summoner_nickname.split('#')[0] %></span>
+            <span class="champ-name"><%= blueSup?.lcg_champion_name %></span>
+          </div>
+          <div class="p-tags">
+            <span class="wl-text"><%= blueSup?.lcg_win_count %>승 <%= blueSup?.lcg_fail_count %>패</span>
+            <span class="wl-text"><%= blueSup?.kda %> KDA</span>
+          </div>
+          <div class="wr-row">
+            <div class="wr-track">
+              <div class="wr-fill" style="width:<%= blueSup?.rate %>%"></div>
+              <span class="wr-pct"><%= blueSup?.rate %>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lane-mid">
+        <span class="lane-label">SUP</span>
+        <div class="h2h-score"><span class="b"><%= relativeSup?.lcg_win_count %></span><span class="sep">:</span><span class="r"><%= relativeSup?.lcg_fail_count %></span></div>
+        <div class="h2h-bar" title="상대전적 TOP (블루팀 기준)">
+          <div class="seg-b" style="width:<%= relativeSup?.rateBlue %>%"></div>
+          <div class="seg-r" style="width:<%= relativeSup?.rateRed %>%"></div>
+        </div>
+        <span class="h2h-note"><%= relativeSup?.lcg_win_count + relativeSup?.lcg_fail_count %>번째 매치</span>
+      </div>
+
+      <div class="p-card red" style="--champ-bg:url('https://img.rabbitgang-img.shop/centered/<%= redSup?.lcg_champion_name %>_0.webp')">
+        <div class="p-info">
+          <div class="p-names">
+            <span class="p-name"><%= redSup?.lcg_summoner_nickname.split('#')[0] %></span>
+            <span class="champ-name"><%= redSup?.lcg_champion_name %></span>
+          </div>
+          <div class="p-tags">
+            <span class="wl-text"><%= redSup?.lcg_win_count %>승 <%= redSup?.lcg_fail_count %>패</span>
+            <span class="wl-text"><%= redSup?.kda %> KDA</span>
+          </div>
+          <div class="wr-row">
+            <div class="wr-track red">
+              <div class="wr-fill" style="width:<%= redSup?.rate %>%"></div>
+              <span class="wr-pct"><%= redSup?.rate %>%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
