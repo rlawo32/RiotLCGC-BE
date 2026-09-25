@@ -24,10 +24,15 @@ const captureToView = async (type, reserve) => {
         const heightAdd = 150;
         captureWidth = 850;
         captureHeight = 140 + (heightAdd * reserve);
+    } else if(type === 'I') {
+        captureUrl = 'realTimeInfo';
+        const heightAdd = 150;
+        captureWidth = 850;
+        captureHeight = 140 + (heightAdd * reserve);
     }
 
     try {
-		await page.setViewport({ width: captureWidth, height: captureHeight });
+		await page.setViewport({ width: captureWidth, height: captureHeight, deviceScaleFactor: 2 });
         await page.goto(`http://localhost:8080/${captureUrl}`, {
             waitUntil: 'networkidle2',
             timeout: 60000 

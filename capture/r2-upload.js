@@ -7,6 +7,7 @@ const r2AccessKey = process.env.R2_ACCESS_KEY;
 const r2SecretKey = process.env.R2_SECRET_KEY;
 const r2BucketName = process.env.R2_BUCKET_NAME;
 const r2PublicUrl = process.env.R2_PUBLIC_URL;
+const r2DevUrl = process.env.R2_DEV_URL;
 
 const s3 = new AWS.S3({
         endpoint: `https://${r2AccountId}.r2.cloudflarestorage.com`,
@@ -28,6 +29,9 @@ const uploadToR2 = async (type, file) => {
         } else if(type === 'S') { // shuffle
                 addPath = 'shuffle';
                 buffer = file;
+        } else if(type === 'I') { // realTimeInfo
+                addPath = 'realTimeInfo';
+                buffer = fs.readFileSync(file);
         }
         const fileName = `${addPath}/${uuidv4()}.png`;
 

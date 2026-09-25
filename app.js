@@ -7,91 +7,15 @@ const supabase = require('./supabase.js');
 const app = express();
 const port = 8080;
 
+const { getLogData, getEtcData, getMainData, getTeamData } = require('./queries/query-history.js');
+const { getFearlessData, getGameExists  } = require('./queries/query-fearless.js');
+const { getPlayerChampionData, getPlayerRelativeData, getGameSetData } = require('./queries/query-realTimeInfo.js');
+
 const { uploadToR2 } = require('./capture/r2-upload.js');
 const { sendToDiscord } = require('./discord/discord-send.js');
 const { captureToView } = require('./capture/view-capture.js');
 const client = require('./discord/discord-bot.js');
 client.login(process.env.DISCORD_BOT_TOKEN);
-
-const getLogData = async() => {
-	const { data, error } = await supabase
-		.from('lcg_match_log')
-		.select('lcg_game_id, lcg_game_ver, lcg_game_date')
-		.order("lcg_game_id", { ascending: false })
-		.limit(1);
-	if (error) {
-		console.error('Error fetching data:', error);
-	} else {
-		//console.log('Data:', data);
-	}
-	return data; 
-};
-
-const getEtcData = async() => {
-	const { data, error } = await supabase
-		.from("lcg_match_etc")
-		.select("lcg_main_image, lcg_sub_image, lcg_r2_image")
-		.order("lcg_update_date", { ascending: false })
-		.limit(1);
-	if (error) {
-		console.error('Error fetching data:', error);
-	} else {
-		//console.log('Data:', data);
-	}
-	return data; 
-};
-
-const getTeamData = async(gameId) => {
-	const { data, error } = await supabase
-		.from("lcg_match_team")
-		.select("*")
-		.eq("lcg_game_id", gameId);
-	if (error) {
-		console.error('Error fetching data:', error);
-	} else {
-		//console.log('Data:', data);
-	}
-	return data; 
-};
-
-const getMainData = async(gameId) => {
-	const { data, error } = await supabase
-		.rpc("match_history")
-		.select("*")
-		.eq("lcg_game_id", gameId);
-	if (error) {
-		console.error('Error fetching data:', error);
-	} else {
-		//console.log('Data:', data);
-	}
-	return data; 
-};
-
-const getFearlessData = async(gameDay) => {
-	const { data, error } = await supabase
-		.rpc("match_gameset", {game_day: gameDay});
-	if (error) {
-		console.error('Error fetching data:', error);
-	} else {
-		//console.log('Data:', data);
-	}
-	return data; 
-};
-
-const getGameExists = async(gameDay) => {
-	const { data, error } = await supabase
-		.from("lcg_match_info")
-		.select("lcg_game_id, lcg_game_set")
-		.like("lcg_game_set", `%${gameDay}%`)
-		.order("lcg_game_set", { ascending: false })
-		.limit(1);
-	if (error) {
-		console.error('Error fetching data:', error);
-	} else {
-		//console.log('Data:', data);
-	}
-	return data; 
-};
 
 const calcGameDurationMin = (duration) => {
     let minute = Math.floor(duration / 60);
@@ -189,7 +113,7 @@ app.get('/history', async (req, res) => {
 	const lcgGameVer = logData[0].lcg_game_ver;
 	const lcgGameDurationMin = calcGameDurationMin(mainData[0].lcg_game_duration);
 	const lcgGameDurationSec = String(mainData[0].lcg_game_duration % 60).padStart(2, '0');
-	const imageUrl = etcData[0].lcg_r2_image;
+	const imageUrl = etcData[0].lcg_main_image;
     const imageUrl1 = etcData[0].lcg_main_image;
     const imageUrl2 = etcData[0].lcg_sub_image;
 
@@ -214,6 +138,109 @@ app.get('/fearless', async (req, res) => {
 	const dataLength = mainData.length;
 
 	res.render("fearless", { lcgGameDate, imageUrl1, imageUrl2, mainData, dataLength });
+});
+
+// 실시간 게임 정보 생성
+let realTimeInfo_req_data;
+let result_champion;
+let result_relative;
+app.get('/realTimeInfo', async (req, res) => {
+	res.set('Content-Type', 'text/html; charset=utf-8');
+
+	const date = new Date();
+	date.setHours(date.getHours() - 6);
+	const targetDate = `${String(date.getFullYear()).slice(2)}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+	const gameSetData = await getGameSetData(targetDate);
+
+	const currentDate = `${date.getFullYear()}. ${String(date.getMonth() + 1).padStart(2, '0')}. ${String(date.getDate()).padStart(2, '0')}.`;
+	const currentSet = gameSetData.length > 0 ? Number(gameSetData[0].lcg_game_set.split("_")[1]) + 1 : 1;
+
+	const kdaConversion = (kill, death, assist) => {
+		return Number(((kill + assist) / death).toFixed(2));
+	}
+
+	const winningRate = (win, fail) => {
+		return Number((win / (win + fail) * 100).toFixed(1));
+	}
+
+	const relativeRate = (type, win, fail) => {
+		let resultRate;
+		if(type === 'B') {
+			resultRate = Number((win / (win + fail) * 100).toFixed(1));
+		} else if(type === 'R') {
+			resultRate = Number((fail / (win + fail) * 100).toFixed(1));
+		}
+		return resultRate;
+	}
+
+	const result = result_champion?.map(({ 
+		lcg_summoner_puuid, lcg_summoner_nickname, lcg_champion_name,
+		lcg_kill_count, lcg_death_count, lcg_assist_count,
+		lcg_win_count, lcg_fail_count
+	}) => {
+		const bluePlayer = realTimeInfo_req_data.teamBlue.find(
+			player => player.puuid === lcg_summoner_puuid
+		);
+
+		if (bluePlayer) {
+			return {
+				lane: bluePlayer.lane,
+				team: 'BLUE',
+				rate: winningRate(lcg_win_count, lcg_fail_count),
+				kda: kdaConversion(lcg_kill_count, lcg_death_count, lcg_assist_count),
+				lcg_summoner_puuid,
+				lcg_summoner_nickname,
+				lcg_champion_name,
+				lcg_kill_count,
+				lcg_death_count,
+				lcg_assist_count,
+				lcg_win_count,
+				lcg_fail_count,
+			};
+		}
+
+		const redPlayer = realTimeInfo_req_data.teamRed.find(
+			player => player.puuid === lcg_summoner_puuid
+		);
+
+		if (redPlayer) {
+			return {
+				lane: redPlayer.lane,
+				team: 'RED',
+				rate: winningRate(lcg_win_count, lcg_fail_count),
+				kda: kdaConversion(lcg_kill_count, lcg_death_count, lcg_assist_count),
+				lcg_summoner_puuid,
+				lcg_summoner_nickname,
+				lcg_champion_name,
+				lcg_kill_count,
+				lcg_death_count,
+				lcg_assist_count,
+				lcg_win_count,
+				lcg_fail_count,
+			};
+		}
+
+		return {
+			lcg_summoner_puuid,
+			lane: null,
+			team: null,
+		};
+	});
+
+	const relative = result_relative?.map(({ 
+		lcg_person_puuid, lcg_match_line, lcg_win_count, lcg_fail_count
+	}) => {
+		return {
+			rateBlue: relativeRate('B', lcg_win_count, lcg_fail_count),
+			rateRed: relativeRate('R', lcg_win_count, lcg_fail_count),
+			lcg_person_puuid,
+			lcg_match_line,
+			lcg_win_count,
+			lcg_fail_count,
+		};
+	});
+
+	res.render("realTimeInfo", { currentDate, currentSet, result, relative });
 });
 
 const storage = multer.memoryStorage();
@@ -245,7 +272,7 @@ app.post('/send-image', upload.single('imageFile'), async (req, res) => {
     }
 });
 
-// NextJS로부터 Shuffle TeamResult 수신
+// LCGV로부터 Shuffle TeamResult 수신
 app.post('/send-shuffle', async (req, res) => {
     try {
 		const data = req.body;
@@ -267,6 +294,44 @@ app.post('/send-shuffle', async (req, res) => {
 		await sendToDiscord("R", "", result);
 
         res.status(200).json({ message: 'TeamResult received successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// LCGS로부터 RealTimeInfo 수신
+app.post('/send-realTimeInfo', async (req, res) => {
+    try {
+		const data = req.body;
+		realTimeInfo_req_data = data;
+
+		const playerData_champion = [
+			...data.teamBlue, 
+			...data.teamRed
+		].map(({ puuid, championId }) => ({
+			puuid,
+			championId,
+		}));
+
+		const playerData_relative = data.teamBlue.map((bluePlayer) => {
+			const redPlayer = data.teamRed.find(
+				(redPlayer) => redPlayer.lane === bluePlayer.lane
+			);
+
+			return {
+				lane: bluePlayer.lane,
+				bluePuuid: bluePlayer.puuid,
+				redPuuid: redPlayer?.puuid,
+			};
+		});
+
+		result_champion = await getPlayerChampionData(playerData_champion);
+		result_relative = await getPlayerRelativeData(playerData_relative);
+
+        // await captureToView('I', 0);
+
+        res.status(200).json({ message: 'RealTimeInfo received successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });

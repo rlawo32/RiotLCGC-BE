@@ -40,7 +40,7 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
                     fields: [
                         {
                             name: "-------------------",
-                            value: "```ansi\n\u001b[1;34m🔵BlueTeam\u001b[0m\n```" + `\`\`\`ansi\n\u001b[1;37m  ${left.split(' ').join('\n  ')}\u001b[0m\`\`\``,
+                            value: "```ansi\n\u001b[1;34m🔵BlueTeam\u001b[0m\n```" + `\`\`\`ansi\n\u001b[1;37m  - ${left.split(' ').join('\n  - ')}\u001b[0m\`\`\``,
                             inline: true
                         },
                         {
@@ -50,15 +50,25 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
                         },
                         {
                             name: "-------------------",
-                            value: "```ansi\n\u001b[1;31m 🔴RedTeam\u001b[0m\n```" + `\`\`\`ansi\n\u001b[1;37m  ${right.split(' ').join('\n  ')}\u001b[0m\`\`\``,
+                            value: "```ansi\n\u001b[1;31m 🔴RedTeam\u001b[0m\n```" + `\`\`\`ansi\n\u001b[1;37m  - ${right.split(' ').join('\n  - ')}\u001b[0m\`\`\``,
                             inline: true
                         }
                     ],
                     timestamp: new Date()
                 }]
             };
-            // webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
-            webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEAMRESULT;
+            webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
+            // webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEAMRESULT;
+        } else if(type === "I") {
+            // form.append('content', `${date} 실시간 매치 정보\n${imageUrl}`);
+            form.append('content', `${imageUrl}`);
+            // embedData = {
+            //     embeds: [{
+            //         image: {url: `${imageUrl}`},
+            //     }]
+            // };
+            webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST;
+            //webhookUrl = process.env.DISCORD_WEBHOOK_URL_SHUFFLE;
         }
         // webhookUrl = process.env.DISCORD_WEBHOOK_URL_TEST; // TEST
 
@@ -69,7 +79,7 @@ const sendToDiscord = async (type, originPath, imageUrl) => {
                 headers: form.getHeaders()
             });
         }
-        if(type === "H" || type === "F") {
+        if(type === "H" || type === "F" || type === "I") {
             try {
                 await fs.unlink(originPath); // 로컬 파일 제거
                 console.log(`Cleanup Success: Removed local file ${originPath}`);
